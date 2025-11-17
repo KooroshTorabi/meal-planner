@@ -177,7 +177,7 @@ You **do not** need to deploy this project.
           * How you implemented access control for the three roles
           * How you designed the kitchen dashboard and aggregation
           * Any challenges you faced and how you solved them
-6.  Email the link to your repository to **mihael.presecan@layerfinance.com**
+6.  Email the link to your repository to with your job application to **jobs@layerfinance.com** (cc: **mihael.presecan@layerfinance.com**)
 
 ## 8\. Evaluation Criteria
 
