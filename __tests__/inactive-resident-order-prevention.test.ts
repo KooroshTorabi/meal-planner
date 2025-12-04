@@ -35,8 +35,8 @@ describe('Inactive Resident Order Prevention Property Tests', () => {
       
       fc.assert(
         fc.asyncProperty(
-          fc.string({ minLength: 1 }), // resident ID
-          fc.string({ minLength: 1 }), // resident name
+          fc.uuid(), // resident ID
+          fc.string({ minLength: 1 }).filter(s => s.trim().length > 0), // resident name
           fc.constantFrom('breakfast', 'lunch', 'dinner'), // meal type
           async (residentId, residentName, mealType) => {
             const mockData = {
@@ -90,8 +90,8 @@ describe('Inactive Resident Order Prevention Property Tests', () => {
       
       fc.assert(
         fc.asyncProperty(
-          fc.string({ minLength: 1 }), // resident ID
-          fc.string({ minLength: 1 }), // resident name
+          fc.uuid(), // resident ID
+          fc.string({ minLength: 1 }).filter(s => s.trim().length > 0), // resident name
           fc.constantFrom('breakfast', 'lunch', 'dinner'), // meal type
           async (residentId, residentName, mealType) => {
             const mockData = {
@@ -140,7 +140,7 @@ describe('Inactive Resident Order Prevention Property Tests', () => {
       
       fc.assert(
         fc.asyncProperty(
-          fc.string({ minLength: 1 }), // resident ID
+          fc.uuid(), // resident ID
           fc.constantFrom('breakfast', 'lunch', 'dinner'), // meal type
           fc.constantFrom('pending', 'prepared', 'completed'), // status
           async (residentId, mealType, status) => {

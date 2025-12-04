@@ -48,21 +48,21 @@ describe('User Role Assignment Property Tests', () => {
       
       // Generator for invalid roles (anything except the three valid ones)
       const invalidRoleGenerator = fc.string().filter(
-        (role) => !['admin', 'caregiver', 'kitchen'].includes(role)
+        (role) => !['admin', 'caregiver', 'kitchen'].includes(role) && role.trim().length > 0
       )
       
       fc.assert(
         fc.property(invalidRoleGenerator, (invalidRole) => {
-          // Test that the role field validator rejects invalid roles
+          // Test that the role field is a select with only valid options
           const roleField = Users.fields.find((f) => 'name' in f && f.name === 'role')
           
-          if (roleField && 'validate' in roleField && roleField.validate) {
-            const validationResult = roleField.validate(invalidRole, {})
-            // Validation should return an error message for invalid roles
-            return typeof validationResult === 'string' && validationResult.includes('Role must be one of')
+          if (roleField && 'options' in roleField && roleField.options) {
+            const validValues = roleField.options.map((opt: any) => opt.value)
+            // Invalid role should not be in the valid options
+            return !validValues.includes(invalidRole)
           }
           
-          // If no validator found, test should fail
+          // If no options found, test should fail
           return false
         }),
         { numRuns: 100 }

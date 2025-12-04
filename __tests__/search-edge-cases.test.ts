@@ -56,6 +56,7 @@ describe('Search Edge Cases - Residents', () => {
       limit: 50,
       page: 1,
       sort: 'name',
+      depth: 0,
     })
   })
 
@@ -96,6 +97,7 @@ describe('Search Edge Cases - Residents', () => {
       limit: 50,
       page: 1,
       sort: 'name',
+      depth: 0,
     })
   })
 
@@ -149,6 +151,7 @@ describe('Search Edge Cases - Residents', () => {
       limit: 50,
       page: 1,
       sort: 'name',
+      depth: 0,
     })
   })
 
@@ -180,6 +183,7 @@ describe('Search Edge Cases - Residents', () => {
       limit: 50,
       page: 1,
       sort: 'name',
+      depth: 0,
     })
   })
 })
@@ -245,6 +249,7 @@ describe('Search Edge Cases - Meal Orders', () => {
       limit: 50,
       page: 1,
       sort: '-date',
+      depth: 1,
     })
   })
 
@@ -355,6 +360,7 @@ describe('Search Edge Cases - Meal Orders', () => {
       limit: 50,
       page: 1,
       sort: '-date',
+      depth: 1,
     })
   })
 
@@ -393,6 +399,7 @@ describe('Search Edge Cases - Meal Orders', () => {
       limit: 50,
       page: 1,
       sort: '-date',
+      depth: 1,
     })
   })
 
@@ -426,6 +433,7 @@ describe('Search Edge Cases - Meal Orders', () => {
       limit: 10,
       page: 2,
       sort: '-date',
+      depth: 1,
     })
   })
 })

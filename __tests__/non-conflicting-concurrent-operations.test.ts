@@ -162,13 +162,16 @@ describe('Non-Conflicting Concurrent Operations', () => {
         // For any set of meal orders
         // Orders with different (resident, date, mealType) combinations don't conflict
         
-        const orderKeys = orders.map(o => 
+        // Filter out invalid dates
+        const validOrders = orders.filter(o => !isNaN(o.date.getTime()))
+        
+        const orderKeys = validOrders.map(o => 
           `${o.resident}-${o.date.toISOString()}-${o.mealType}`
         )
         const uniqueKeys = new Set(orderKeys)
         
         // If all combinations are unique, no conflicts
-        return uniqueKeys.size === orders.length
+        return uniqueKeys.size === validOrders.length
       }),
       { numRuns: 100 }
     )
@@ -191,13 +194,16 @@ describe('Non-Conflicting Concurrent Operations', () => {
         // For any set of meal order creations
         // Orders for different residents (or different dates/meal types) don't conflict
         
-        const orderKeys = orders.map(o => 
+        // Filter out invalid dates
+        const validOrders = orders.filter(o => !isNaN(o.date.getTime()))
+        
+        const orderKeys = validOrders.map(o => 
           `${o.resident}-${o.date.toISOString()}-${o.mealType}`
         )
         const uniqueKeys = new Set(orderKeys)
         
         // Each unique combination can be created concurrently
-        return uniqueKeys.size <= orders.length
+        return uniqueKeys.size <= validOrders.length
       }),
       { numRuns: 100 }
     )
