@@ -431,6 +431,7 @@ meal-planner/
 │   ├── ERROR_HANDLING_IMPLEMENTATION.md
 │   ├── PERFORMANCE_OPTIMIZATIONS.md
 │   ├── STYLING_GUIDE.md         # UI styling guide
+│   ├── SWAGGER_API_DOCS.md      # Interactive API documentation guide
 │   ├── TEST_CATALOG.md          # Complete test file catalog
 │   └── TESTING_STRATEGY.md      # Testing guidelines
 │
@@ -517,7 +518,17 @@ These documents provide the foundation for the entire system and are referenced 
 
 ## API Documentation
 
-For detailed API documentation, see [API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md).
+### Interactive API Documentation (Swagger)
+
+Access the interactive API documentation at [http://localhost:3000/api-docs](http://localhost:3000/api-docs) when running the development server.
+
+**Features:**
+- 🎯 Try API endpoints directly in your browser
+- 📝 Complete request/response examples
+- 🔐 Built-in authentication testing
+- 📊 All endpoints documented with OpenAPI 3.0
+
+For detailed narrative documentation, see [API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md).
 
 ### Quick Reference
 
