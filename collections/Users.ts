@@ -189,5 +189,14 @@ export const Users: CollectionConfig = {
         return data
       },
     ],
+    afterChange: [
+      async ({ doc, operation, previousDoc }) => {
+        // Invalidate user permissions cache if role changed
+        if (operation === 'update' && previousDoc && previousDoc.role !== doc.role) {
+          const { invalidateUserPermissionsCache } = await import('../lib/cache/permissions')
+          invalidateUserPermissionsCache(doc.id)
+        }
+      },
+    ],
   },
 }

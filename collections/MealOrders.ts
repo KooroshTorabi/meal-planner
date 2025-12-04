@@ -319,6 +319,10 @@ export const MealOrders: CollectionConfig = {
             }
           )
         }
+
+        // Invalidate meal order caches after any change
+        const { invalidateMealOrders } = await import('../lib/cache')
+        invalidateMealOrders()
       },
     ],
   },
@@ -328,6 +332,7 @@ export const MealOrders: CollectionConfig = {
       type: 'relationship',
       relationTo: 'residents',
       required: true,
+      index: true, // Index for filtering by resident
       admin: {
         description: 'The resident for whom this meal order is created',
       },
@@ -336,6 +341,7 @@ export const MealOrders: CollectionConfig = {
       name: 'date',
       type: 'date',
       required: true,
+      index: true, // Index for date-based queries
       admin: {
         description: 'Date for which the meal is ordered',
         date: {
@@ -361,6 +367,7 @@ export const MealOrders: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'pending',
+      index: true, // Index for filtering by status
       options: [
         { label: 'Pending', value: 'pending' },
         { label: 'Prepared', value: 'prepared' },

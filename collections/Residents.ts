@@ -127,6 +127,20 @@ export const Residents: CollectionConfig = {
         return data
       },
     ],
+    afterChange: [
+      async ({ doc, operation }) => {
+        // Invalidate resident cache after any change
+        const { invalidateResidentCache } = await import('../lib/cache/residents')
+        invalidateResidentCache(doc.id)
+      },
+    ],
+    afterDelete: [
+      async ({ doc }) => {
+        // Invalidate resident cache after deletion
+        const { invalidateResidentCache } = await import('../lib/cache/residents')
+        invalidateResidentCache(doc.id)
+      },
+    ],
   },
   fields: [
     {
