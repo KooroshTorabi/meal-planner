@@ -413,8 +413,10 @@ Our CI pipeline runs:
 
 ### Internal Documentation
 
-- [Design Document](.kiro/specs/meal-planner-system/design.md)
-- [Requirements Document](.kiro/specs/meal-planner-system/requirements.md)
+- [Test Catalog](./TEST_CATALOG.md) - Complete catalog of all test files and their categories
+- [Design Document](../spec/design.md) - System design and correctness properties
+- [Requirements Document](../spec/requirements.md) - Complete system requirements
+- [Tasks Document](../spec/tasks.md) - Implementation task list
 - [API Documentation](./API_DOCUMENTATION.md)
 
 ## Conclusion

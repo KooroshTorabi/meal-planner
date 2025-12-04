@@ -14,6 +14,7 @@ A comprehensive digital meal planning and ordering system for elderly care homes
 - [Testing](#testing)
 - [Project Structure](#project-structure)
 - [User Roles](#user-roles)
+- [Specification Documents](#specification-documents)
 - [API Documentation](#api-documentation)
 - [Development Guidelines](#development-guidelines)
 - [Deployment](#deployment)
@@ -341,7 +342,7 @@ open coverage/lcov-report/index.html
 
 ### Writing Tests
 
-See the [Testing Strategy](docs/TESTING_STRATEGY.md) document for guidelines on writing tests.
+See the [Testing Strategy](docs/TESTING_STRATEGY.md) document for guidelines on writing tests, and the [Test Catalog](docs/TEST_CATALOG.md) for a complete overview of all test files and their organization.
 
 ## Project Structure
 
@@ -417,11 +418,21 @@ meal-planner/
 │   ├── *.test.tsx               # Component tests
 │   └── setup.test.ts            # Test setup verification
 │
+├── spec/                         # Specification documents
+│   ├── requirements.md          # System requirements (EARS format)
+│   ├── design.md                # System design & correctness properties
+│   ├── tasks.md                 # Implementation task list
+│   └── non-functional-requirements.md
+│
 ├── docs/                         # Documentation
 │   ├── ACCESSIBILITY_SUMMARY.md # Accessibility features
+│   ├── API_DOCUMENTATION.md     # API endpoint reference
+│   ├── DATA_MODELS.md           # Database schema documentation
 │   ├── ERROR_HANDLING_IMPLEMENTATION.md
 │   ├── PERFORMANCE_OPTIMIZATIONS.md
-│   └── STYLING_GUIDE.md         # UI styling guide
+│   ├── STYLING_GUIDE.md         # UI styling guide
+│   ├── TEST_CATALOG.md          # Complete test file catalog
+│   └── TESTING_STRATEGY.md      # Testing guidelines
 │
 ├── migrations/                   # Database migrations
 ├── public/                       # Static assets
@@ -491,6 +502,18 @@ The system implements Role-Based Access Control (RBAC) with three distinct roles
 - ❌ Cannot modify order details (only status)
 
 **Access**: Residents (read), Meal Orders (read, update status), Alerts (read, acknowledge)
+
+## Specification Documents
+
+The system was built using a specification-driven development approach. All specifications are located in the `spec/` folder:
+
+- **[Specification Overview](spec/README.md)** - Complete guide to the specification documents
+- **[Requirements](spec/requirements.md)** - Complete system requirements in EARS format with acceptance criteria
+- **[Design](spec/design.md)** - System architecture, data models, and 39 correctness properties
+- **[Tasks](spec/tasks.md)** - Implementation task list with property-based test mappings
+- **[Non-Functional Requirements](spec/non-functional-requirements.md)** - Performance, security, and scalability requirements
+
+These documents provide the foundation for the entire system and are referenced throughout the codebase and tests. See the [Specification Overview](spec/README.md) for detailed information about the specification-driven development process.
 
 ## API Documentation
 
