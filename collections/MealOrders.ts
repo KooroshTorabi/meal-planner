@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import type { Access } from 'payload'
+import { logDataModification, logUnauthorizedAccessFromPayload } from '@/lib/audit'
 
 /**
  * Access Control Rules for Meal Orders Collection
@@ -33,8 +34,24 @@ const readAccess: Access = ({ req: { user } }) => {
 }
 
 // Create access: Admin and Caregiver can create meal orders
-const createAccess: Access = ({ req: { user } }) => {
-  return user?.role === 'admin' || user?.role === 'caregiver'
+const createAccess: Access = async ({ req }) => {
+  const { user } = req
+  const hasAccess = user?.role === 'admin' || user?.role === 'caregiver'
+  
+  if (!hasAccess && user) {
+    // Log unauthorized access attempt
+    await logUnauthorizedAccessFromPayload(
+      req.payload,
+      String(user.id),
+      user.email,
+      'meal-orders',
+      'create',
+      undefined,
+      { role: user.role }
+    )
+  }
+  
+  return hasAccess
 }
 
 // Update access: Complex rules based on role and order status
@@ -64,8 +81,24 @@ const updateAccess: Access = ({ req: { user }, data }) => {
 }
 
 // Delete access: Only admin can delete meal orders
-const deleteAccess: Access = ({ req: { user } }) => {
-  return user?.role === 'admin'
+const deleteAccess: Access = async ({ req, id }) => {
+  const { user } = req
+  const hasAccess = user?.role === 'admin'
+  
+  if (!hasAccess && user) {
+    // Log unauthorized access attempt
+    await logUnauthorizedAccessFromPayload(
+      req.payload,
+      String(user.id),
+      user.email,
+      'meal-orders',
+      'delete',
+      String(id),
+      { role: user.role }
+    )
+  }
+  
+  return hasAccess
 }
 
 export const MealOrders: CollectionConfig = {
@@ -268,6 +301,28 @@ export const MealOrders: CollectionConfig = {
             },
           })
         }
+
+        // Log data modification to audit logs
+        if (req.user && (operation === 'create' || operation === 'update')) {
+          const action = operation === 'create' ? 'data_create' : 'data_update'
+          await logDataModification(
+            req.payload,
+            action,
+            String(req.user.id),
+            req.user.email || 'unknown',
+            'meal-orders',
+            String(doc.id),
+            {
+              mealType: doc.mealType,
+              status: doc.status,
+              urgent: doc.urgent,
+            }
+          )
+        }
+
+        // Invalidate meal order caches after any change
+        const { invalidateMealOrders } = await import('../lib/cache')
+        invalidateMealOrders()
       },
     ],
   },
@@ -277,6 +332,7 @@ export const MealOrders: CollectionConfig = {
       type: 'relationship',
       relationTo: 'residents',
       required: true,
+      index: true, // Index for filtering by resident
       admin: {
         description: 'The resident for whom this meal order is created',
       },
@@ -285,6 +341,7 @@ export const MealOrders: CollectionConfig = {
       name: 'date',
       type: 'date',
       required: true,
+      index: true, // Index for date-based queries
       admin: {
         description: 'Date for which the meal is ordered',
         date: {
@@ -310,6 +367,7 @@ export const MealOrders: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'pending',
+      index: true, // Index for filtering by status
       options: [
         { label: 'Pending', value: 'pending' },
         { label: 'Prepared', value: 'prepared' },

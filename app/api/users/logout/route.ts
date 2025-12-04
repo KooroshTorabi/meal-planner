@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { logLogout } from '@/lib/audit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,6 +49,9 @@ export async function POST(request: NextRequest) {
         refreshTokens: updatedTokens,
       },
     })
+
+    // Log logout
+    await logLogout(payload, String(user.id), user.email, request)
 
     return NextResponse.json({ message: 'Logged out successfully' })
   } catch (error) {

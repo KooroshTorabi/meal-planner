@@ -8,6 +8,7 @@ import { MealOrders } from './collections/MealOrders'
 import { VersionedRecords } from './collections/VersionedRecords'
 import { ArchivedRecords } from './collections/ArchivedRecords'
 import { Alerts } from './collections/Alerts'
+import { AuditLogs } from './collections/AuditLogs'
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '',
@@ -30,6 +31,7 @@ export default buildConfig({
     VersionedRecords,
     ArchivedRecords,
     Alerts,
+    AuditLogs,
   ],
   
   typescript: {

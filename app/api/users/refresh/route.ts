@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { generateAccessToken, isRefreshTokenExpired } from '@/lib/auth/tokens'
+import { logTokenRefresh } from '@/lib/audit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (users.docs.length === 0) {
+      await logTokenRefresh(payload, '', '', false, request, 'Invalid refresh token')
       return NextResponse.json(
         { error: 'Invalid refresh token' },
         { status: 401 }
@@ -44,6 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user is active
     if (!user.active) {
+      await logTokenRefresh(payload, String(user.id), user.email, false, request, 'Account is inactive')
       return NextResponse.json(
         { error: 'Account is inactive' },
         { status: 401 }
@@ -72,6 +75,7 @@ export async function POST(request: NextRequest) {
         },
       })
 
+      await logTokenRefresh(payload, String(user.id), user.email, false, request, 'Refresh token expired')
       return NextResponse.json(
         { error: 'Refresh token expired' },
         { status: 401 }
@@ -84,6 +88,9 @@ export async function POST(request: NextRequest) {
       email: user.email,
       role: user.role,
     })
+
+    // Log successful token refresh
+    await logTokenRefresh(payload, String(user.id), user.email, true, request)
 
     return NextResponse.json({
       accessToken,

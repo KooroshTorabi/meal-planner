@@ -6,18 +6,15 @@
  * Accepts date and mealType parameters and returns aggregated ingredient quantities
  * for all meal orders with pending or prepared status.
  * 
- * Requirements: 4.1, 4.2
+ * Uses optimized database-level aggregation for improved performance.
+ * 
+ * Requirements: 4.1, 4.2, NFR-1
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import {
-  aggregateBreakfastIngredients,
-  aggregateLunchIngredients,
-  aggregateDinnerIngredients,
-  type MealOrder,
-} from '@/lib/aggregation'
+import { aggregateIngredientsOptimized } from '@/lib/aggregation/optimized'
 
 export async function GET(request: NextRequest) {
   try {
@@ -60,65 +57,21 @@ export async function GET(request: NextRequest) {
     // Get Payload instance
     const payload = await getPayload({ config })
 
-    // Query meal orders for the specified date and meal type
-    const result = await payload.find({
-      collection: 'meal-orders',
-      where: {
-        and: [
-          {
-            date: {
-              equals: date,
-            },
-          },
-          {
-            mealType: {
-              equals: mealType,
-            },
-          },
-          {
-            or: [
-              {
-                status: {
-                  equals: 'pending',
-                },
-              },
-              {
-                status: {
-                  equals: 'prepared',
-                },
-              },
-            ],
-          },
-        ],
-      },
-      limit: 1000, // Set a reasonable limit
+    // Use optimized aggregation with database-level filtering
+    const result = await aggregateIngredientsOptimized(payload, {
+      date,
+      mealType: mealType as 'breakfast' | 'lunch' | 'dinner',
+      limit: 1000, // Process up to 1000 orders per page
     })
-
-    // Transform the orders to match the MealOrder interface
-    const orders: MealOrder[] = result.docs.map((doc: any) => ({
-      id: doc.id,
-      status: doc.status,
-      breakfastOptions: doc.breakfastOptions,
-      lunchOptions: doc.lunchOptions,
-      dinnerOptions: doc.dinnerOptions,
-    }))
-
-    // Aggregate ingredients based on meal type
-    let ingredients
-    if (mealType === 'breakfast') {
-      ingredients = aggregateBreakfastIngredients(orders)
-    } else if (mealType === 'lunch') {
-      ingredients = aggregateLunchIngredients(orders)
-    } else {
-      ingredients = aggregateDinnerIngredients(orders)
-    }
 
     // Return the aggregated results
     return NextResponse.json({
       date,
       mealType,
-      totalOrders: orders.length,
-      ingredients,
+      totalOrders: result.totalOrders,
+      ingredients: result.ingredients,
+      page: result.page,
+      totalPages: result.totalPages,
     })
   } catch (error) {
     console.error('Error aggregating ingredients:', error)

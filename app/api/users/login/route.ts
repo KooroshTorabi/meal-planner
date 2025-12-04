@@ -17,6 +17,7 @@ import {
   getRemainingAttempts,
   getTimeUntilUnlock,
 } from '@/lib/auth/rate-limiter'
+import { logAuthAttempt, log2FAVerify } from '@/lib/audit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
       // Log failed authentication attempt
       console.warn(`Failed login attempt for email: ${email} - User not found`)
       recordFailedAttempt(ip)
+      await logAuthAttempt(payload, email, false, request, 'User not found')
       return NextResponse.json(
         { 
           error: 'Invalid credentials',
@@ -81,6 +83,7 @@ export async function POST(request: NextRequest) {
     if (!user.active) {
       console.warn(`Failed login attempt for email: ${email} - User is inactive`)
       recordFailedAttempt(ip)
+      await logAuthAttempt(payload, email, false, request, 'Account is inactive')
       return NextResponse.json(
         { 
           error: 'Account is inactive',
@@ -95,6 +98,7 @@ export async function POST(request: NextRequest) {
     if (!passwordMatch) {
       console.warn(`Failed login attempt for email: ${email} - Invalid password`)
       recordFailedAttempt(ip)
+      await logAuthAttempt(payload, email, false, request, 'Invalid password')
       return NextResponse.json(
         { 
           error: 'Invalid credentials',
@@ -131,6 +135,7 @@ export async function POST(request: NextRequest) {
       if (!verified) {
         console.warn(`Failed login attempt for email: ${email} - Invalid 2FA code`)
         recordFailedAttempt(ip)
+        await log2FAVerify(payload, email, false, request, 'Invalid 2FA code')
         return NextResponse.json(
           { 
             error: 'Invalid 2FA code',
@@ -139,6 +144,9 @@ export async function POST(request: NextRequest) {
           { status: 401 }
         )
       }
+      
+      // Log successful 2FA verification
+      await log2FAVerify(payload, email, true, request)
     }
 
     // Successful login - reset rate limit
@@ -165,6 +173,9 @@ export async function POST(request: NextRequest) {
         ],
       },
     })
+
+    // Log successful authentication
+    await logAuthAttempt(payload, email, true, request)
 
     return NextResponse.json({
       accessToken,

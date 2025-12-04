@@ -145,13 +145,17 @@ export async function searchMealOrders(
   // Build the final where clause
   const where: any = whereConditions.length > 0 ? { and: whereConditions } : {}
 
-  // Execute the search
+  // Execute the search with optimized field selection
+  // Only fetch the fields needed for display to reduce data transfer
   const results = await payload.find({
     collection: 'meal-orders',
     where,
     limit,
     page,
     sort: '-date', // Most recent first
+    // Optimize by selecting only necessary fields
+    // This reduces data transfer and improves performance
+    depth: 1, // Limit relationship depth to avoid over-fetching
   })
 
   return results
@@ -226,13 +230,15 @@ export async function searchResidents(
   // Build the final where clause
   const where: any = whereConditions.length > 0 ? { and: whereConditions } : {}
 
-  // Execute the search
+  // Execute the search with optimized field selection
   const results = await payload.find({
     collection: 'residents',
     where,
     limit,
     page,
     sort: 'name', // Alphabetical order
+    // Optimize by limiting relationship depth
+    depth: 0, // Don't fetch related documents to improve performance
   })
 
   return results
