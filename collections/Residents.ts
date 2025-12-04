@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import type { Access } from 'payload'
+import { logUnauthorizedAccessFromPayload } from '@/lib/audit'
 
 /**
  * Access Control Rules for Residents Collection
@@ -21,18 +22,66 @@ const readAccess: Access = ({ req: { user } }) => {
 }
 
 // Create access: Only admin can create residents
-const createAccess: Access = ({ req: { user } }) => {
-  return user?.role === 'admin'
+const createAccess: Access = async ({ req }) => {
+  const { user } = req
+  const hasAccess = user?.role === 'admin'
+  
+  if (!hasAccess && user) {
+    // Log unauthorized access attempt
+    await logUnauthorizedAccessFromPayload(
+      req.payload,
+      String(user.id),
+      user.email,
+      'residents',
+      'create',
+      undefined,
+      { role: user.role }
+    )
+  }
+  
+  return hasAccess
 }
 
 // Update access: Only admin can update residents
-const updateAccess: Access = ({ req: { user } }) => {
-  return user?.role === 'admin'
+const updateAccess: Access = async ({ req, id }) => {
+  const { user } = req
+  const hasAccess = user?.role === 'admin'
+  
+  if (!hasAccess && user) {
+    // Log unauthorized access attempt
+    await logUnauthorizedAccessFromPayload(
+      req.payload,
+      String(user.id),
+      user.email,
+      'residents',
+      'update',
+      String(id),
+      { role: user.role }
+    )
+  }
+  
+  return hasAccess
 }
 
 // Delete access: Only admin can delete residents
-const deleteAccess: Access = ({ req: { user } }) => {
-  return user?.role === 'admin'
+const deleteAccess: Access = async ({ req, id }) => {
+  const { user } = req
+  const hasAccess = user?.role === 'admin'
+  
+  if (!hasAccess && user) {
+    // Log unauthorized access attempt
+    await logUnauthorizedAccessFromPayload(
+      req.payload,
+      String(user.id),
+      user.email,
+      'residents',
+      'delete',
+      String(id),
+      { role: user.role }
+    )
+  }
+  
+  return hasAccess
 }
 
 export const Residents: CollectionConfig = {

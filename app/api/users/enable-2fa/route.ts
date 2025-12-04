@@ -9,6 +9,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import speakeasy from 'speakeasy'
 import { verifyAccessToken } from '@/lib/auth/tokens'
+import { log2FAEnable } from '@/lib/audit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,6 +62,9 @@ export async function POST(request: NextRequest) {
         twoFactorEnabled: true,
       },
     })
+
+    // Log 2FA enable
+    await log2FAEnable(payload, String(user.id), user.email, request)
 
     return NextResponse.json({
       secret: secret.base32,
