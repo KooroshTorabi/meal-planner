@@ -105,19 +105,19 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+        <h1 className="text-2xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 xs:mb-6 sm:mb-8">
           Meal Orders Reports
         </h1>
 
-        {/* Filter Controls */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        {/* Filter Controls - Responsive */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6 mb-4 xs:mb-4 sm:mb-6">
+          <h2 className="text-lg xs:text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
             Filters
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Date Range */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -178,19 +178,23 @@ export default function ReportsPage() {
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 mt-6">
+          {/* Action Buttons - Stack on mobile, inline on larger screens */}
+          <div className="flex flex-col xs:flex-col sm:flex-row gap-3 mt-6">
             <button
               onClick={generateReport}
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="px-6 py-3 xs:py-3 sm:py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
+                       disabled:bg-gray-400 disabled:cursor-not-allowed min-h-touch
+                       text-base xs:text-base sm:text-sm font-medium"
             >
               {loading ? 'Generating...' : 'Generate Report'}
             </button>
             
             <button
               onClick={clearFilters}
-              className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+              className="px-6 py-3 xs:py-3 sm:py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white 
+                       rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 min-h-touch
+                       text-base xs:text-base sm:text-sm font-medium"
             >
               Clear Filters
             </button>
@@ -230,13 +234,13 @@ export default function ReportsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 xs:gap-4 sm:gap-6">
                 {/* Total Orders */}
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                  <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-1">
+                  <p className="text-xs xs:text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-medium mb-1">
                     Total Orders
                   </p>
-                  <p className="text-3xl font-bold text-blue-900 dark:text-blue-100">
+                  <p className="text-2xl xs:text-2xl sm:text-3xl font-bold text-blue-900 dark:text-blue-100">
                     {reportData.summary.totalOrders}
                   </p>
                 </div>
@@ -279,14 +283,16 @@ export default function ReportsPage() {
                 Top Ingredients
               </h2>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 xs:gap-3 sm:gap-4">
                 {Object.entries(reportData.summary.byIngredient)
                   .sort(([, a], [, b]) => (b as number) - (a as number))
                   .slice(0, 12)
                   .map(([ingredient, count]) => (
                     <div key={ingredient} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{ingredient}</p>
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white">{count}</p>
+                      <p className="text-xs xs:text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 truncate" title={ingredient}>
+                        {ingredient}
+                      </p>
+                      <p className="text-xl xs:text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{count}</p>
                     </div>
                   ))}
               </div>
@@ -298,8 +304,10 @@ export default function ReportsPage() {
                 Order Details ({reportData.data.length} orders)
               </h2>
               
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <div className="overflow-x-auto -mx-4 xs:-mx-4 sm:mx-0">
+                <div className="inline-block min-w-full align-middle">
+                  <div className="overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -352,10 +360,12 @@ export default function ReportsPage() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                    </table>
+                  </div>
+                </div>
                 
                 {reportData.data.length > 50 && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 text-center">
+                  <p className="text-xs xs:text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-4 text-center px-4">
                     Showing first 50 of {reportData.data.length} orders. Export to see all data.
                   </p>
                 )}

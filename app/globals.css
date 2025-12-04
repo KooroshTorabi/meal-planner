@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-background: #ffffff;
+  --border-color: #e5e7eb;
 }
 
 @theme inline {
@@ -12,10 +14,21 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Dark mode colors - only applied when .dark class is present */
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card-background: #1e293b;
+  --border-color: #334155;
+}
+
+/* Respect system preference if no explicit theme is set */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not(.light) {
+    --background: #0f172a;
+    --foreground: #f1f5f9;
+    --card-background: #1e293b;
+    --border-color: #334155;
   }
 }
 
@@ -23,4 +36,24 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ensure smooth transitions for theme changes */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Focus indicators for accessibility */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Touch-friendly minimum sizes */
+button, a, input[type="checkbox"], input[type="radio"] {
+  min-height: 44px;
+  min-width: 44px;
 }

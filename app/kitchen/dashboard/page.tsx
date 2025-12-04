@@ -126,20 +126,20 @@ export default function KitchenDashboard() {
   }) || []
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        {/* Header - Responsive text sizes */}
+        <div className="mb-6 xs:mb-6 sm:mb-8">
+          <h1 className="text-2xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Kitchen Dashboard
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-sm xs:text-sm sm:text-base text-gray-600 dark:text-gray-400">
             View meal orders, ingredient requirements, and alerts
           </p>
         </div>
 
-        {/* Date and Meal Type Selector */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+        {/* Date and Meal Type Selector - Touch-friendly on mobile */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6 mb-4 xs:mb-4 sm:mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label
@@ -153,7 +153,10 @@ export default function KitchenDashboard() {
                 id="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 xs:py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white 
+                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                         min-h-touch text-base xs:text-base sm:text-sm"
               />
             </div>
             <div>
@@ -167,7 +170,10 @@ export default function KitchenDashboard() {
                 id="mealType"
                 value={mealType}
                 onChange={(e) => setMealType(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 xs:py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white 
+                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                         min-h-touch text-base xs:text-base sm:text-sm"
               >
                 <option value="breakfast">Breakfast</option>
                 <option value="lunch">Lunch</option>
@@ -244,29 +250,29 @@ export default function KitchenDashboard() {
               </div>
             )}
 
-            {/* Summary Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Orders</p>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">
+            {/* Summary Statistics - Responsive grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 xs:gap-3 sm:gap-4 mb-4 xs:mb-4 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6">
+                <p className="text-xs xs:text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Total Orders</p>
+                <p className="text-2xl xs:text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                   {dashboardData.summary.totalOrders}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Pending</p>
-                <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6">
+                <p className="text-xs xs:text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Pending</p>
+                <p className="text-2xl xs:text-2xl sm:text-3xl font-bold text-yellow-600 dark:text-yellow-400">
                   {dashboardData.summary.pendingOrders}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Prepared</p>
-                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6">
+                <p className="text-xs xs:text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Prepared</p>
+                <p className="text-2xl xs:text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">
                   {dashboardData.summary.preparedOrders}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Completed</p>
-                <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6">
+                <p className="text-xs xs:text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Completed</p>
+                <p className="text-2xl xs:text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400">
                   {dashboardData.summary.completedOrders}
                 </p>
               </div>

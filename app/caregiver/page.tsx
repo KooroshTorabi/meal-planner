@@ -26,14 +26,17 @@ export default function CaregiverPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+      {/* Responsive container with proper padding for all screen sizes */}
+      <div className="container mx-auto px-4 xs:px-4 sm:px-6 md:px-8 py-6 xs:py-6 sm:py-8 md:py-10">
+        {/* Responsive heading */}
+        <h1 className="text-2xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 xs:mb-6 sm:mb-8">
           Meal Order Management
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Responsive grid layout: stacked on mobile, side-by-side on desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 xs:gap-4 sm:gap-6 md:gap-8">
           {/* Left Column: Resident Selection and Order Form */}
-          <div className="space-y-6">
+          <div className="space-y-4 xs:space-y-4 sm:space-y-6">
             <ResidentSelector
               selectedResident={selectedResident}
               onSelectResident={setSelectedResident}
