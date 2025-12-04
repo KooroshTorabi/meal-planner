@@ -126,6 +126,27 @@ export const MealOrders: CollectionConfig = {
           }
         }
 
+        // Optimistic locking: Check version on update
+        if (operation === 'update') {
+          // If version is provided in the update data, verify it matches the current version
+          if (data.version !== undefined && originalDoc?.version !== undefined) {
+            if (data.version !== originalDoc.version) {
+              // Version mismatch - concurrent modification detected
+              throw new Error(
+                JSON.stringify({
+                  error: 'Conflict detected',
+                  message: 'This meal order has been modified by another user',
+                  currentVersion: originalDoc,
+                  yourVersion: data,
+                })
+              )
+            }
+          }
+          
+          // Increment version number on update
+          data.version = (originalDoc?.version || 1) + 1
+        }
+
         // Prevent modification of prepared/completed orders by caregivers
         if (operation === 'update' && req.user?.role === 'caregiver') {
           if (originalDoc?.status === 'prepared' || originalDoc?.status === 'completed') {
@@ -321,6 +342,16 @@ export const MealOrders: CollectionConfig = {
       defaultValue: false,
       admin: {
         description: 'Mark this order as urgent to trigger alerts to kitchen staff',
+      },
+    },
+    {
+      name: 'version',
+      type: 'number',
+      required: true,
+      defaultValue: 1,
+      admin: {
+        readOnly: true,
+        description: 'Version number for optimistic locking (concurrency control)',
       },
     },
     {
