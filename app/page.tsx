@@ -6,87 +6,88 @@ import Alert from '@/components/ui/Alert'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6 md:p-8">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6 md:p-8" role="main" aria-label="Meal Planner System Home">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
-        <div className="text-center mb-12">
+        <header className="text-center mb-12">
           <h1 className="text-3xl xs:text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Meal Planner System
           </h1>
           <p className="text-base xs:text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Digital meal planning and ordering system for elderly care homes
           </p>
-        </div>
+        </header>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <nav aria-label="Main navigation" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <Card padding="lg" hover>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <article className="text-center">
+              <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+                <svg className="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 Caregiver Interface
-              </h3>
+              </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Create and manage meal orders for residents
               </p>
-              <Link href="/caregiver">
+              <Link href="/caregiver" aria-label="Navigate to Caregiver Interface">
                 <Button variant="primary" size="md" className="w-full">
                   Go to Caregiver
                 </Button>
               </Link>
-            </div>
+            </article>
           </Card>
 
           <Card padding="lg" hover>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-success-100 dark:bg-success-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-success-600 dark:text-success-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <article className="text-center">
+              <div className="w-12 h-12 bg-success-100 dark:bg-success-900/30 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+                <svg className="w-6 h-6 text-success-600 dark:text-success-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 Kitchen Dashboard
-              </h3>
+              </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 View orders and ingredient requirements
               </p>
-              <Link href="/kitchen/dashboard">
+              <Link href="/kitchen/dashboard" aria-label="Navigate to Kitchen Dashboard">
                 <Button variant="success" size="md" className="w-full">
                   Go to Kitchen
                 </Button>
               </Link>
-            </div>
+            </article>
           </Card>
 
           <Card padding="lg" hover>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-warning-100 dark:bg-warning-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <article className="text-center">
+              <div className="w-12 h-12 bg-warning-100 dark:bg-warning-900/30 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+                <svg className="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 Reports
-              </h3>
+              </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Generate and export meal order reports
               </p>
-              <Link href="/reports">
+              <Link href="/reports" aria-label="Navigate to Reports">
                 <Button variant="warning" size="md" className="w-full">
                   Go to Reports
                 </Button>
               </Link>
-            </div>
+            </article>
           </Card>
-        </div>
+        </nav>
 
         {/* Features Section */}
+        <section aria-labelledby="features-heading">
         <Card padding="lg" className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 id="features-heading" className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             System Features
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -120,16 +121,17 @@ export default function Home() {
             </div>
           </div>
         </Card>
+        </section>
 
         {/* Demo Alerts */}
-        <div className="space-y-4">
+        <aside aria-label="System notifications" className="space-y-4">
           <Alert variant="info">
             <strong>Info:</strong> The theme toggle is located in the top-right corner. Try switching between light, dark, and system themes!
           </Alert>
           <Alert variant="success">
             <strong>Success:</strong> All responsive UI features have been implemented and tested.
           </Alert>
-        </div>
+        </aside>
       </div>
     </main>
   )

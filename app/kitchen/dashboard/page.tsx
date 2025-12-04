@@ -126,20 +126,22 @@ export default function KitchenDashboard() {
   }) || []
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6 md:p-8">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6 md:p-8" role="main" aria-label="Kitchen Dashboard">
       <div className="max-w-7xl mx-auto">
         {/* Header - Responsive text sizes */}
-        <div className="mb-6 xs:mb-6 sm:mb-8">
+        <header className="mb-6 xs:mb-6 sm:mb-8">
           <h1 className="text-2xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Kitchen Dashboard
           </h1>
           <p className="text-sm xs:text-sm sm:text-base text-gray-600 dark:text-gray-400">
             View meal orders, ingredient requirements, and alerts
           </p>
-        </div>
+        </header>
 
         {/* Date and Meal Type Selector - Touch-friendly on mobile */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6 mb-4 xs:mb-4 sm:mb-6">
+        <section aria-labelledby="filters-heading" className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6 mb-4 xs:mb-4 sm:mb-6">
+          <h2 id="filters-heading" className="sr-only">Filter Options</h2>
+          <form role="search" aria-label="Filter meal orders by date and meal type">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label
@@ -151,8 +153,10 @@ export default function KitchenDashboard() {
               <input
                 type="date"
                 id="date"
+                name="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                aria-label="Select date for meal orders"
                 className="w-full px-4 py-3 xs:py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-md 
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white 
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent
@@ -168,8 +172,10 @@ export default function KitchenDashboard() {
               </label>
               <select
                 id="mealType"
+                name="mealType"
                 value={mealType}
                 onChange={(e) => setMealType(e.target.value)}
+                aria-label="Select meal type"
                 className="w-full px-4 py-3 xs:py-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-md 
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white 
                          focus:ring-2 focus:ring-blue-500 focus:border-transparent
@@ -181,19 +187,20 @@ export default function KitchenDashboard() {
               </select>
             </div>
           </div>
-        </div>
+          </form>
+        </section>
 
         {/* Loading State */}
         {loading && (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="text-center py-12" role="status" aria-live="polite">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" aria-hidden="true"></div>
             <p className="mt-4 text-gray-600 dark:text-gray-400">Loading dashboard data...</p>
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6" role="alert" aria-live="assertive">
             <p className="text-red-800 dark:text-red-200">{error}</p>
           </div>
         )}
@@ -203,8 +210,8 @@ export default function KitchenDashboard() {
           <>
             {/* Alert Notifications */}
             {dashboardData.alerts.length > 0 && (
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              <section aria-labelledby="alerts-heading" className="mb-6">
+                <h2 id="alerts-heading" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                   Active Alerts
                 </h2>
                 <div className="space-y-3">
@@ -247,11 +254,12 @@ export default function KitchenDashboard() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
             )}
 
             {/* Summary Statistics - Responsive grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 xs:gap-3 sm:gap-4 mb-4 xs:mb-4 sm:mb-6">
+            <section aria-labelledby="summary-heading" className="grid grid-cols-2 md:grid-cols-4 gap-3 xs:gap-3 sm:gap-4 mb-4 xs:mb-4 sm:mb-6">
+              <h2 id="summary-heading" className="sr-only">Order Summary Statistics</h2>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6">
                 <p className="text-xs xs:text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Total Orders</p>
                 <p className="text-2xl xs:text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
@@ -276,11 +284,11 @@ export default function KitchenDashboard() {
                   {dashboardData.summary.completedOrders}
                 </p>
               </div>
-            </div>
+            </section>
 
             {/* Ingredient Report */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <section aria-labelledby="ingredients-heading" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+              <h2 id="ingredients-heading" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Ingredient Requirements
               </h2>
               {dashboardData.ingredients.length === 0 ? (
@@ -321,12 +329,12 @@ export default function KitchenDashboard() {
                   </table>
                 </div>
               )}
-            </div>
+            </section>
 
             {/* Order List */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <section aria-labelledby="orders-heading" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <h2 id="orders-heading" className="text-xl font-semibold text-gray-900 dark:text-white">
                   Meal Orders
                 </h2>
                 {/* Status Filter */}
@@ -427,10 +435,10 @@ export default function KitchenDashboard() {
                   ))}
                 </div>
               )}
-            </div>
+            </section>
           </>
         )}
       </div>
-    </div>
+    </main>
   )
 }

@@ -236,38 +236,49 @@ export default function MealOrderForm({ resident, onOrderCreated }: MealOrderFor
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow" role="region" aria-labelledby="meal-order-form-heading">
       <div className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 id="meal-order-form-heading" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Create Meal Order for {resident.name}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" aria-label="Meal order creation form">
           {/* Date Selector */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="meal-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Date *
             </label>
             <input
               type="date"
+              id="meal-date"
+              name="meal-date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
+              aria-required="true"
+              aria-describedby="meal-date-description"
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                        focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
+            <p id="meal-date-description" className="sr-only">
+              Select the date for this meal order. Required field.
+            </p>
           </div>
 
           {/* Meal Type Selector */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="meal-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Meal Type *
             </label>
             <select
+              id="meal-type"
+              name="meal-type"
               value={mealType}
               onChange={(e) => setMealType(e.target.value as MealType)}
               required
+              aria-required="true"
+              aria-describedby="meal-type-description"
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                        focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -276,12 +287,15 @@ export default function MealOrderForm({ resident, onOrderCreated }: MealOrderFor
               <option value="lunch">Lunch</option>
               <option value="dinner">Dinner</option>
             </select>
+            <p id="meal-type-description" className="sr-only">
+              Select the type of meal for this order. Required field. Options will change based on meal type selected.
+            </p>
           </div>
 
           {/* Breakfast Options */}
           {mealType === 'breakfast' && (
-            <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <h3 className="font-medium text-gray-900 dark:text-white">Breakfast Options</h3>
+            <fieldset className="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <legend className="font-medium text-gray-900 dark:text-white">Breakfast Options</legend>
 
               {/* Follows Plan */}
               <label className="flex items-center">
@@ -459,13 +473,13 @@ export default function MealOrderForm({ resident, onOrderCreated }: MealOrderFor
                   ))}
                 </div>
               </div>
-            </div>
+            </fieldset>
           )}
 
           {/* Lunch Options */}
           {mealType === 'lunch' && (
-            <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <h3 className="font-medium text-gray-900 dark:text-white">Lunch Options</h3>
+            <fieldset className="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <legend className="font-medium text-gray-900 dark:text-white">Lunch Options</legend>
 
               {/* Portion Size */}
               <div>
@@ -574,13 +588,13 @@ export default function MealOrderForm({ resident, onOrderCreated }: MealOrderFor
                   ))}
                 </div>
               </div>
-            </div>
+            </fieldset>
           )}
 
           {/* Dinner Options */}
           {mealType === 'dinner' && (
-            <div className="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <h3 className="font-medium text-gray-900 dark:text-white">Dinner Options</h3>
+            <fieldset className="space-y-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <legend className="font-medium text-gray-900 dark:text-white">Dinner Options</legend>
 
               {/* Follows Plan */}
               <label className="flex items-center">
@@ -778,18 +792,21 @@ export default function MealOrderForm({ resident, onOrderCreated }: MealOrderFor
                   ))}
                 </div>
               </div>
-            </div>
+            </fieldset>
           )}
 
           {/* Special Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="special-notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Special Notes
             </label>
             <textarea
+              id="special-notes"
+              name="special-notes"
               value={specialNotes}
               onChange={(e) => setSpecialNotes(e.target.value)}
               rows={3}
+              aria-label="Special notes or instructions for this meal order"
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                        focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -798,28 +815,43 @@ export default function MealOrderForm({ resident, onOrderCreated }: MealOrderFor
           </div>
 
           {/* Urgent Flag */}
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={urgent}
-              onChange={(e) => setUrgent(e.target.checked)}
-              className="w-4 h-4 text-red-600 rounded focus:ring-red-500"
-            />
-            <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-              Mark as Urgent (will alert kitchen staff)
-            </span>
-          </label>
+          <div>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                id="urgent-flag"
+                name="urgent-flag"
+                checked={urgent}
+                onChange={(e) => setUrgent(e.target.checked)}
+                aria-describedby="urgent-description"
+                className="w-4 h-4 text-red-600 rounded focus:ring-red-500"
+              />
+              <span className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Mark as Urgent (will alert kitchen staff)
+              </span>
+            </label>
+            <p id="urgent-description" className="sr-only">
+              Check this box to mark the order as urgent. This will immediately notify all kitchen staff.
+            </p>
+          </div>
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <p className="text-red-800 dark:text-red-200">{error}</p>
+            <div 
+              id="form-error" 
+              className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4" 
+              role="alert" 
+              aria-live="assertive"
+            >
+              <p className="text-red-800 dark:text-red-200">
+                <strong>Error:</strong> {error}
+              </p>
             </div>
           )}
 
           {/* Success Message */}
           {success && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4" role="status" aria-live="polite">
               <p className="text-green-800 dark:text-green-200">
                 Meal order created successfully!
               </p>
@@ -830,6 +862,7 @@ export default function MealOrderForm({ resident, onOrderCreated }: MealOrderFor
           <button
             type="submit"
             disabled={submitting}
+            aria-label={submitting ? 'Creating meal order, please wait' : 'Submit meal order'}
             className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 
                      text-white font-medium rounded-lg transition-colors
                      focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

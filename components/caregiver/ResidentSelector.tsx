@@ -93,12 +93,13 @@ export default function ResidentSelector({
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" role="region" aria-labelledby="resident-selector-heading">
+        <h2 id="resident-selector-heading" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Select Resident
         </h2>
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="flex items-center justify-center py-8" role="status" aria-live="polite">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" aria-hidden="true"></div>
+          <span className="sr-only">Loading residents...</span>
         </div>
       </div>
     )
@@ -106,15 +107,16 @@ export default function ResidentSelector({
 
   if (error) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6" role="region" aria-labelledby="resident-selector-heading">
+        <h2 id="resident-selector-heading" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Select Resident
         </h2>
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4" role="alert">
           <p className="text-red-800 dark:text-red-200">{error}</p>
           <button
             onClick={fetchResidents}
             className="mt-2 text-sm text-red-600 dark:text-red-400 hover:underline"
+            aria-label="Retry loading residents"
           >
             Try again
           </button>
@@ -124,19 +126,23 @@ export default function ResidentSelector({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow" role="region" aria-labelledby="resident-selector-heading">
       <div className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 id="resident-selector-heading" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           Select Resident
         </h2>
 
         {/* Search Input */}
         <div className="mb-4">
+          <label htmlFor="resident-search" className="sr-only">Search residents</label>
           <input
-            type="text"
+            type="search"
+            id="resident-search"
+            name="resident-search"
             placeholder="Search by name, room, or station..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            aria-label="Search residents by name, room number, or station"
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                      bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                      focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -144,9 +150,9 @@ export default function ResidentSelector({
         </div>
 
         {/* Resident List */}
-        <div className="space-y-2 max-h-96 overflow-y-auto">
+        <div className="space-y-2 max-h-96 overflow-y-auto" role="list" aria-label="Resident list">
           {filteredResidents.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+            <p className="text-gray-500 dark:text-gray-400 text-center py-4" role="status">
               No residents found
             </p>
           ) : (
@@ -154,6 +160,9 @@ export default function ResidentSelector({
               <button
                 key={resident.id}
                 onClick={() => handleSelectResident(resident)}
+                role="listitem"
+                aria-pressed={selectedResident?.id === resident.id}
+                aria-label={`Select ${resident.name}, Room ${resident.roomNumber}${resident.highCalorie ? ', High Calorie' : ''}`}
                 className={`w-full text-left p-4 rounded-lg border-2 transition-all
                   ${
                     selectedResident?.id === resident.id

@@ -105,52 +105,61 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6" role="main" aria-label="Meal Orders Reports">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 xs:mb-6 sm:mb-8">
           Meal Orders Reports
         </h1>
 
         {/* Filter Controls - Responsive */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6 mb-4 xs:mb-4 sm:mb-6">
-          <h2 className="text-lg xs:text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <section aria-labelledby="filters-heading" className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 xs:p-4 sm:p-6 mb-4 xs:mb-4 sm:mb-6">
+          <h2 id="filters-heading" className="text-lg xs:text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
             Filters
           </h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Date Range */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="start-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Start Date
               </label>
               <input
                 type="date"
+                id="start-date"
+                name="start-date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
+                aria-label="Report start date"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="end-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 End Date
               </label>
               <input
                 type="date"
+                id="end-date"
+                name="end-date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                aria-label="Report end date"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
             {/* Meal Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="report-meal-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Meal Type
               </label>
               <select
+                id="report-meal-type"
+                name="report-meal-type"
                 value={mealType}
                 onChange={(e) => setMealType(e.target.value)}
+                aria-label="Filter by meal type"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">All</option>
@@ -162,12 +171,15 @@ export default function ReportsPage() {
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="report-status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Status
               </label>
               <select
+                id="report-status"
+                name="report-status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
+                aria-label="Filter by order status"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
                 <option value="">All</option>
@@ -199,11 +211,11 @@ export default function ReportsPage() {
               Clear Filters
             </button>
           </div>
-        </div>
+        </section>
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6" role="alert" aria-live="assertive">
             <p className="text-red-800 dark:text-red-200">{error}</p>
           </div>
         )}
@@ -211,9 +223,9 @@ export default function ReportsPage() {
         {/* Report Summary */}
         {reportData && (
           <>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+            <section aria-labelledby="summary-heading" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <h2 id="summary-heading" className="text-xl font-semibold text-gray-900 dark:text-white">
                   Summary
                 </h2>
                 
@@ -275,11 +287,11 @@ export default function ReportsPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
 
             {/* Top Ingredients */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <section aria-labelledby="ingredients-heading" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+              <h2 id="ingredients-heading" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Top Ingredients
               </h2>
               
@@ -296,11 +308,11 @@ export default function ReportsPage() {
                     </div>
                   ))}
               </div>
-            </div>
+            </section>
 
             {/* Order Details Table */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <section aria-labelledby="orders-heading" className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 id="orders-heading" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Order Details ({reportData.data.length} orders)
               </h2>
               
@@ -370,19 +382,19 @@ export default function ReportsPage() {
                   </p>
                 )}
               </div>
-            </div>
+            </section>
           </>
         )}
 
         {/* Empty State */}
         {!reportData && !loading && !error && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
+          <aside className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center" role="status">
             <p className="text-gray-500 dark:text-gray-400 text-lg">
               Select filters and click "Generate Report" to view meal order data
             </p>
-          </div>
+          </aside>
         )}
       </div>
-    </div>
+    </main>
   )
 }
