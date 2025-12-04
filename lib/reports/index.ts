@@ -25,7 +25,7 @@ export interface ReportFilters {
  * Meal order report data
  */
 export interface MealOrderReport {
-  id: string
+  id: string | number
   residentName: string
   residentRoom: string
   date: string

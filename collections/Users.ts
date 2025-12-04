@@ -64,8 +64,6 @@ const deleteAccess: Access = ({ req: { user } }) => {
 export const Users: CollectionConfig = {
   slug: 'users',
   auth: {
-    // Disable Payload's default auth to use custom implementation
-    disableLocalStrategy: false,
     tokenExpiration: 900, // 15 minutes for access tokens
     verify: false, // Disable email verification
     maxLoginAttempts: 5,
@@ -96,13 +94,6 @@ export const Users: CollectionConfig = {
         { label: 'Kitchen', value: 'kitchen' },
       ],
       defaultValue: 'caregiver',
-      validate: (value: string) => {
-        const validRoles = ['admin', 'caregiver', 'kitchen']
-        if (!validRoles.includes(value)) {
-          return 'Role must be one of: admin, caregiver, kitchen'
-        }
-        return true
-      },
       access: {
         // Only admin can update roles
         update: ({ req: { user } }) => user?.role === 'admin',

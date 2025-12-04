@@ -151,22 +151,4 @@ export const Alerts: CollectionConfig = {
     },
   ],
   timestamps: true,
-  // Set up indexes for efficient querying
-  indexes: [
-    {
-      fields: {
-        acknowledged: 1,
-      },
-    },
-    {
-      fields: {
-        createdAt: -1,
-      },
-    },
-    {
-      fields: {
-        severity: 1,
-      },
-    },
-  ],
 }

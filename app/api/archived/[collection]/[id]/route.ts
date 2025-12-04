@@ -17,7 +17,7 @@ import { retrieveArchivedData } from '../../../../../lib/retention/archival'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { collection: string; id: string } }
+  { params }: { params: Promise<{ collection: string; id: string }> }
 ) {
   try {
     const payload = await getPayload({ config })
@@ -76,7 +76,7 @@ export async function GET(
       )
     }
     
-    const { collection, id } = params
+    const { collection, id } = await params
     
     // Validate collection name
     const validCollections = [

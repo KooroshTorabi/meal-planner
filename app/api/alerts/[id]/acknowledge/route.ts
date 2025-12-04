@@ -30,10 +30,10 @@ function verifyToken(token: string): JWTPayload | null {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const alertId = params.id
+    const { id: alertId } = await params
 
     // Get authorization header
     const authHeader = request.headers.get('authorization')

@@ -127,18 +127,4 @@ export const VersionedRecords: CollectionConfig = {
     },
   ],
   timestamps: true,
-  // Add indexes for efficient querying
-  indexes: [
-    {
-      fields: {
-        collectionName: 1,
-        documentId: 1,
-      },
-    },
-    {
-      fields: {
-        createdAt: -1,
-      },
-    },
-  ],
 }

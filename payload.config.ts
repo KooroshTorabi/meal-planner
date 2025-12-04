@@ -41,8 +41,6 @@ export default buildConfig({
     user: 'users',
     meta: {
       titleSuffix: '- Meal Planner System',
-      favicon: '/favicon.ico',
-      ogImage: '/og-image.png',
     },
     // Custom branding
     components: {},
@@ -58,13 +56,6 @@ export default buildConfig({
   csrf: [
     process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
   ],
-  
-  // Rate limiting configuration
-  rateLimit: {
-    max: 500, // Max requests per window
-    window: 15 * 60 * 1000, // 15 minutes
-    trustProxy: true,
-  },
   
   // Server URL configuration
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',

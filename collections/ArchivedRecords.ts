@@ -109,22 +109,4 @@ export const ArchivedRecords: CollectionConfig = {
     },
   ],
   timestamps: true,
-  indexes: [
-    {
-      fields: {
-        collectionName: 1,
-        documentId: 1,
-      },
-    },
-    {
-      fields: {
-        archivedAt: -1,
-      },
-    },
-    {
-      fields: {
-        originalCreatedAt: -1,
-      },
-    },
-  ],
 }

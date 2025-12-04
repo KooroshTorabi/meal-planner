@@ -9,12 +9,12 @@ import config from '@/payload.config'
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const payload = await getPayload({ config })
     const body = await request.json()
-    const { id } = params
+    const { id } = await params
 
     // Get the current document to check version
     const currentDoc = await payload.findByID({
@@ -91,11 +91,11 @@ export async function PATCH(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const payload = await getPayload({ config })
-    const { id } = params
+    const { id } = await params
 
     const doc = await payload.findByID({
       collection: 'meal-orders',
@@ -112,6 +112,64 @@ export async function GET(
     return NextResponse.json(doc, { status: 200 })
   } catch (error: any) {
     console.error('Error fetching meal order:', error)
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: error.message || 'An unexpected error occurred',
+      },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * DELETE /api/meal-orders/:id
+ * Delete a meal order by ID
+ * Only allowed for pending orders
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const payload = await getPayload({ config })
+    const { id } = await params
+
+    // Check if order exists and is pending
+    const doc = await payload.findByID({
+      collection: 'meal-orders',
+      id,
+    })
+
+    if (!doc) {
+      return NextResponse.json(
+        { error: 'Not found', message: 'Meal order not found' },
+        { status: 404 }
+      )
+    }
+
+    // Only allow deletion of pending orders
+    if (doc.status !== 'pending') {
+      return NextResponse.json(
+        { 
+          error: 'Forbidden', 
+          message: 'Only pending orders can be deleted' 
+        },
+        { status: 403 }
+      )
+    }
+
+    await payload.delete({
+      collection: 'meal-orders',
+      id,
+    })
+
+    return NextResponse.json(
+      { message: 'Meal order deleted successfully' },
+      { status: 200 }
+    )
+  } catch (error: any) {
+    console.error('Error deleting meal order:', error)
     return NextResponse.json(
       {
         error: 'Internal server error',
