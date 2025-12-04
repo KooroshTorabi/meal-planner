@@ -171,27 +171,8 @@ export const MealOrders: CollectionConfig = {
           })
         }
 
-        // Create alerts for urgent orders
+        // Create alerts for urgent orders and deliver via multi-channel
         if (doc.urgent && (operation === 'create' || (operation === 'update' && !previousDoc?.urgent))) {
-          // Get all active kitchen staff users
-          const kitchenStaff = await req.payload.find({
-            collection: 'users',
-            where: {
-              and: [
-                {
-                  role: {
-                    equals: 'kitchen',
-                  },
-                },
-                {
-                  active: {
-                    equals: true,
-                  },
-                },
-              ],
-            },
-          })
-
           // Get resident information for the alert message
           const resident = typeof doc.resident === 'string' 
             ? await req.payload.findByID({
@@ -201,20 +182,28 @@ export const MealOrders: CollectionConfig = {
             : doc.resident
 
           const residentName = typeof resident === 'object' && resident !== null ? resident.name : 'Unknown'
+          const roomNumber = typeof resident === 'object' && resident !== null ? resident.roomNumber : 'N/A'
           const mealType = doc.mealType.charAt(0).toUpperCase() + doc.mealType.slice(1)
           
-          // Create an alert for each active kitchen staff member
-          for (const staff of kitchenStaff.docs) {
-            await req.payload.create({
-              collection: 'alerts',
-              data: {
-                mealOrder: doc.id,
-                message: `Urgent ${mealType} order for ${residentName} (Room ${typeof resident === 'object' && resident !== null ? resident.roomNumber : 'N/A'})`,
-                severity: 'high',
-                acknowledged: false,
-              },
-            })
-          }
+          // Create a single alert in the database
+          const alert = await req.payload.create({
+            collection: 'alerts',
+            data: {
+              mealOrder: doc.id,
+              message: `Urgent ${mealType} order for ${residentName} (Room ${roomNumber})`,
+              severity: 'high',
+              acknowledged: false,
+            },
+          })
+
+          // Deliver alert through all configured channels (WebSocket, Push, Email)
+          // Import is done dynamically to avoid circular dependencies
+          const { deliverAlertWithRetry } = await import('../lib/alerts/delivery-orchestration')
+          
+          // Deliver with automatic retry on failure
+          deliverAlertWithRetry(req.payload, alert, 3).catch((error) => {
+            console.error('Error delivering urgent order alert:', error)
+          })
         }
 
         // Create versioned record for all changes (create, update, delete)
