@@ -590,6 +590,21 @@
     - Explain design decisions
     - Add JSDoc comments for functions
     - _Requirements: 14.5_
+  
+  - [x] 21.7 Create comprehensive testing documentation
+    - Write TESTING_STRATEGY.md with testing philosophy, frameworks, and property catalog
+    - Write TEST_CATALOG.md with complete test file inventory and categorization
+    - Link testing documentation in README.md
+    - _Requirements: 14.1, 14.5_
+  
+  - [x] 21.8 Implement interactive API documentation
+    - Install and configure Swagger/OpenAPI dependencies
+    - Create OpenAPI 3.0 specification with all endpoints
+    - Implement interactive Swagger UI at /api-docs
+    - Document all authentication, kitchen, search, alert, and report endpoints
+    - Create comprehensive Swagger documentation guides
+    - Link API documentation in README.md and home page
+    - _Requirements: 14.1, 14.3_
 
 - [x] 22. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
