@@ -6,6 +6,7 @@ import { Users } from './collections/Users'
 import { Residents } from './collections/Residents'
 import { MealOrders } from './collections/MealOrders'
 import { VersionedRecords } from './collections/VersionedRecords'
+import { ArchivedRecords } from './collections/ArchivedRecords'
 import { Alerts } from './collections/Alerts'
 
 export default buildConfig({
@@ -27,6 +28,7 @@ export default buildConfig({
     Residents,
     MealOrders,
     VersionedRecords,
+    ArchivedRecords,
     Alerts,
   ],
   
@@ -78,5 +80,9 @@ export default buildConfig({
     // Start alert escalation background job
     const { startAlertEscalationJob } = await import('./lib/alerts/escalation')
     startAlertEscalationJob(payload)
+
+    // Start data archival background job
+    const { startArchivalJob } = await import('./lib/retention/archival')
+    startArchivalJob(payload)
   },
 })
