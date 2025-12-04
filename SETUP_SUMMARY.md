@@ -146,7 +146,7 @@ The project is now ready for implementation. The next tasks are:
    - Implement access control rules
    - Create custom authentication endpoints
 
-3. Continue with remaining tasks as defined in `.kiro/specs/meal-planner-system/tasks.md`
+3. Continue with remaining tasks as defined in `spec/tasks.md`
 
 ## Verification
 
