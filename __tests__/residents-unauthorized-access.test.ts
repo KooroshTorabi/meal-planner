@@ -12,27 +12,30 @@ import { Residents } from '../collections/Residents'
 
 describe('Residents Unauthorized Access Property Tests', () => {
   describe('Property 25: Unauthorized access denial', () => {
-    it('should deny create access to caregiver and kitchen roles', () => {
+    it('should deny create access to caregiver and kitchen roles', async () => {
       // **Feature: meal-planner-system, Property 25: Unauthorized access denial**
       
       const unauthorizedRoles = ['caregiver', 'kitchen']
       
-      fc.assert(
-        fc.property(
+      await fc.assert(
+        fc.asyncProperty(
           fc.constantFrom(...unauthorizedRoles),
-          fc.string({ minLength: 1 }), // user id
-          (role, userId) => {
+          fc.uuid(), // user id
+          async (role, userId) => {
             const mockRequest = {
               user: {
                 id: userId,
                 role: role,
+              },
+              payload: {
+                create: jest.fn(),
               },
             }
             
             // Test create access
             const createAccessFn = Residents.access?.create
             if (typeof createAccessFn === 'function') {
-              const result = createAccessFn({ req: mockRequest } as any)
+              const result = await createAccessFn({ req: mockRequest } as any)
               // Should return false for unauthorized roles
               return result === false
             }
@@ -44,27 +47,30 @@ describe('Residents Unauthorized Access Property Tests', () => {
       )
     })
     
-    it('should deny update access to caregiver and kitchen roles', () => {
+    it('should deny update access to caregiver and kitchen roles', async () => {
       // **Feature: meal-planner-system, Property 25: Unauthorized access denial**
       
       const unauthorizedRoles = ['caregiver', 'kitchen']
       
-      fc.assert(
-        fc.property(
+      await fc.assert(
+        fc.asyncProperty(
           fc.constantFrom(...unauthorizedRoles),
-          fc.string({ minLength: 1 }), // user id
-          (role, userId) => {
+          fc.uuid(), // user id
+          async (role, userId) => {
             const mockRequest = {
               user: {
                 id: userId,
                 role: role,
+              },
+              payload: {
+                create: jest.fn(),
               },
             }
             
             // Test update access
             const updateAccessFn = Residents.access?.update
             if (typeof updateAccessFn === 'function') {
-              const result = updateAccessFn({ req: mockRequest } as any)
+              const result = await updateAccessFn({ req: mockRequest } as any)
               // Should return false for unauthorized roles
               return result === false
             }
@@ -76,27 +82,30 @@ describe('Residents Unauthorized Access Property Tests', () => {
       )
     })
     
-    it('should deny delete access to caregiver and kitchen roles', () => {
+    it('should deny delete access to caregiver and kitchen roles', async () => {
       // **Feature: meal-planner-system, Property 25: Unauthorized access denial**
       
       const unauthorizedRoles = ['caregiver', 'kitchen']
       
-      fc.assert(
-        fc.property(
+      await fc.assert(
+        fc.asyncProperty(
           fc.constantFrom(...unauthorizedRoles),
-          fc.string({ minLength: 1 }), // user id
-          (role, userId) => {
+          fc.uuid(), // user id
+          async (role, userId) => {
             const mockRequest = {
               user: {
                 id: userId,
                 role: role,
+              },
+              payload: {
+                create: jest.fn(),
               },
             }
             
             // Test delete access
             const deleteAccessFn = Residents.access?.delete
             if (typeof deleteAccessFn === 'function') {
-              const result = deleteAccessFn({ req: mockRequest } as any)
+              const result = await deleteAccessFn({ req: mockRequest } as any)
               // Should return false for unauthorized roles
               return result === false
             }
@@ -140,17 +149,20 @@ describe('Residents Unauthorized Access Property Tests', () => {
       )
     })
     
-    it('should allow full CRUD access to admin role', () => {
+    it('should allow full CRUD access to admin role', async () => {
       // **Feature: meal-planner-system, Property 25: Unauthorized access denial**
       
-      fc.assert(
-        fc.property(
-          fc.string({ minLength: 1 }), // user id
-          (userId) => {
+      await fc.assert(
+        fc.asyncProperty(
+          fc.uuid(), // user id
+          async (userId) => {
             const mockRequest = {
               user: {
                 id: userId,
                 role: 'admin',
+              },
+              payload: {
+                create: jest.fn(),
               },
             }
             
@@ -161,16 +173,16 @@ describe('Residents Unauthorized Access Property Tests', () => {
             const deleteAccessFn = Residents.access?.delete
             
             const createResult = typeof createAccessFn === 'function' 
-              ? createAccessFn({ req: mockRequest } as any) 
+              ? await createAccessFn({ req: mockRequest } as any) 
               : false
             const readResult = typeof readAccessFn === 'function' 
-              ? readAccessFn({ req: mockRequest } as any) 
+              ? await readAccessFn({ req: mockRequest } as any) 
               : false
             const updateResult = typeof updateAccessFn === 'function' 
-              ? updateAccessFn({ req: mockRequest } as any) 
+              ? await updateAccessFn({ req: mockRequest } as any) 
               : false
             const deleteResult = typeof deleteAccessFn === 'function' 
-              ? deleteAccessFn({ req: mockRequest } as any) 
+              ? await deleteAccessFn({ req: mockRequest } as any) 
               : false
             
             // Admin should have full access
@@ -184,11 +196,14 @@ describe('Residents Unauthorized Access Property Tests', () => {
       )
     })
     
-    it('should deny all access to unauthenticated users', () => {
+    it('should deny all access to unauthenticated users', async () => {
       // **Feature: meal-planner-system, Property 25: Unauthorized access denial**
       
       const mockRequest = {
         user: undefined,
+        payload: {
+          create: jest.fn(),
+        },
       }
       
       // Test all access functions with no user
@@ -198,16 +213,16 @@ describe('Residents Unauthorized Access Property Tests', () => {
       const deleteAccessFn = Residents.access?.delete
       
       const createResult = typeof createAccessFn === 'function' 
-        ? createAccessFn({ req: mockRequest } as any) 
+        ? await createAccessFn({ req: mockRequest } as any) 
         : true
       const readResult = typeof readAccessFn === 'function' 
-        ? readAccessFn({ req: mockRequest } as any) 
+        ? await readAccessFn({ req: mockRequest } as any) 
         : true
       const updateResult = typeof updateAccessFn === 'function' 
-        ? updateAccessFn({ req: mockRequest } as any) 
+        ? await updateAccessFn({ req: mockRequest } as any) 
         : true
       const deleteResult = typeof deleteAccessFn === 'function' 
-        ? deleteAccessFn({ req: mockRequest } as any) 
+        ? await deleteAccessFn({ req: mockRequest } as any) 
         : true
       
       // All should be denied (false)

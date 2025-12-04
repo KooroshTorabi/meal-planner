@@ -49,6 +49,25 @@ export const VersionedRecords: CollectionConfig = {
     update: updateAccess,
     delete: deleteAccess,
   },
+  indexes: [
+    {
+      fields: {
+        collectionName: 1,
+        documentId: 1,
+      },
+      options: {
+        name: 'collection_document_idx',
+      },
+    },
+    {
+      fields: {
+        createdAt: -1,
+      },
+      options: {
+        name: 'created_at_idx',
+      },
+    },
+  ],
   fields: [
     {
       name: 'collectionName',
