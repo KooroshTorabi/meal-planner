@@ -79,13 +79,24 @@ export async function GET(request: NextRequest) {
     const payload = await getPayload({ config })
 
     // Query meal orders for the specified date and meal type
+    // Note: Date comparison needs to handle both date strings and timestamps
+    const startOfDay = new Date(date)
+    startOfDay.setHours(0, 0, 0, 0)
+    const endOfDay = new Date(date)
+    endOfDay.setHours(23, 59, 59, 999)
+
     const ordersResult = await payload.find({
       collection: 'meal-orders',
       where: {
         and: [
           {
             date: {
-              equals: date,
+              greater_than_equal: startOfDay.toISOString(),
+            },
+          },
+          {
+            date: {
+              less_than_equal: endOfDay.toISOString(),
             },
           },
           {
