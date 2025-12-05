@@ -219,6 +219,22 @@ async function seedResidents(payload: any) {
 
   for (const resident of residents) {
     try {
+      // Check if resident with this room number already exists
+      const existingResident = await payload.find({
+        collection: 'residents',
+        where: {
+          roomNumber: {
+            equals: resident.roomNumber,
+          },
+        },
+        limit: 1,
+      })
+
+      if (existingResident.docs.length > 0) {
+        console.log(`⚠️  Resident already exists in room ${resident.roomNumber}: ${resident.name}`)
+        continue
+      }
+
       await payload.create({
         collection: 'residents',
         data: resident,

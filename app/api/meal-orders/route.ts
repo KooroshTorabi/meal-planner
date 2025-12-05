@@ -146,9 +146,20 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   const date = searchParams.get('date')
   if (date) {
+    // Handle date comparison with timestamps
+    const startOfDay = new Date(date)
+    startOfDay.setHours(0, 0, 0, 0)
+    const endOfDay = new Date(date)
+    endOfDay.setHours(23, 59, 59, 999)
+    
     where.and.push({
       date: {
-        equals: date,
+        greater_than_equal: startOfDay.toISOString(),
+      },
+    })
+    where.and.push({
+      date: {
+        less_than_equal: endOfDay.toISOString(),
       },
     })
   }

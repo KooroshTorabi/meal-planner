@@ -150,7 +150,12 @@ export default function MealOrderForm({ resident, onOrderCreated }: MealOrderFor
       if (mealType === 'breakfast') {
         orderData.breakfastOptions = breakfastOptions
       } else if (mealType === 'lunch') {
-        orderData.lunchOptions = lunchOptions
+        // Clean up lunch options - remove empty portionSize
+        const cleanedLunchOptions = { ...lunchOptions }
+        if (!cleanedLunchOptions.portionSize) {
+          delete cleanedLunchOptions.portionSize
+        }
+        orderData.lunchOptions = cleanedLunchOptions
       } else if (mealType === 'dinner') {
         orderData.dinnerOptions = dinnerOptions
       }

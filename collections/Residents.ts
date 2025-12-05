@@ -155,6 +155,7 @@ export const Residents: CollectionConfig = {
       name: 'roomNumber',
       type: 'text',
       required: true,
+      unique: true,
       admin: {
         description: 'Room number where the resident stays',
       },

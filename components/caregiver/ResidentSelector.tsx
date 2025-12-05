@@ -128,9 +128,30 @@ export default function ResidentSelector({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow" role="region" aria-labelledby="resident-selector-heading">
       <div className="p-6">
-        <h2 id="resident-selector-heading" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          Select Resident
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 id="resident-selector-heading" className="text-xl font-semibold text-gray-900 dark:text-white">
+            Select Resident
+          </h2>
+          {selectedResident && (
+            <button
+              onClick={() => onSelectResident(null)}
+              className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 
+                       text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+              aria-label="Clear resident selection"
+            >
+              Clear Selection
+            </button>
+          )}
+        </div>
+
+        {/* Selected Resident Info */}
+        {selectedResident && (
+          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p className="text-sm font-medium text-blue-900 dark:text-blue-200">
+              Selected: <span className="font-bold">{selectedResident.name}</span> (Room {selectedResident.roomNumber})
+            </p>
+          </div>
+        )}
 
         {/* Search Input */}
         <div className="mb-4">
