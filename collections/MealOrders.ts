@@ -240,7 +240,9 @@ export const MealOrders: CollectionConfig = {
         }
 
         // Create versioned record for all changes (create, update, delete)
-        if (operation === 'create' || operation === 'update') {
+        // Skip versioning during seed (when SEED_DATABASE env var is set)
+        // Skip if doc.id is not available (can happen during initial seed)
+        if ((operation === 'create' || operation === 'update') && doc.id && !process.env.SEED_DATABASE) {
           // Get the current version count for this document
           const existingVersions = await req.payload.find({
             collection: 'versioned-records',

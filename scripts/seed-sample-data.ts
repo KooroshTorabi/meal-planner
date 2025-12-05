@@ -1,89 +1,60 @@
-import type { Payload } from 'payload'
-
 /**
- * Seed database with initial data for testing and development
- * Implements idempotency check to prevent duplicate seeding
+ * Seed sample data (residents and meal orders) without users
+ * Run after users are already created
+ * Run with: npm run seed:data
  */
-export async function seedDatabase(payload: Payload): Promise<void> {
-  console.log('Starting database seeding...')
 
-  try {
-    // Check if database has already been seeded
-    const existingUsers = await payload.find({
-      collection: 'users',
-      limit: 1,
-    })
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
 
-    if (existingUsers.totalDocs > 0) {
-      console.log('Database already seeded. Skipping seed process.')
-      return
+// Load environment variables
+try {
+  const envPath = resolve(process.cwd(), '.env')
+  const envContent = readFileSync(envPath, 'utf-8')
+  
+  envContent.split('\n').forEach(line => {
+    const trimmedLine = line.trim()
+    if (trimmedLine && !trimmedLine.startsWith('#')) {
+      const [key, ...valueParts] = trimmedLine.split('=')
+      if (key && valueParts.length > 0) {
+        const value = valueParts.join('=').trim()
+        process.env[key.trim()] = value
+      }
     }
+  })
+  
+  console.log('Environment variables loaded from .env')
+} catch (error) {
+  console.warn('Could not load .env file:', error)
+}
 
-    // Seed users
-    await seedUsers(payload)
+// Set flag to skip versioning during seed
+process.env.SEED_DATABASE = 'true'
 
-    // Seed residents
+async function seedSampleData() {
+  try {
+    console.log('Loading Payload configuration...')
+    const { getPayload } = await import('payload')
+    const config = await import('../payload.config')
+    
+    console.log('Initializing Payload...')
+    const payload = await getPayload({ config: config.default })
+    
+    console.log('Seeding residents...')
     await seedResidents(payload)
-
-    // Seed meal orders
+    
+    console.log('Seeding meal orders...')
     await seedMealOrders(payload)
-
-    console.log('Database seeding completed successfully!')
+    
+    console.log('\n✅ Sample data seeding completed!')
+    process.exit(0)
   } catch (error) {
-    console.error('Error seeding database:', error)
-    throw error
+    console.error('❌ Seed failed:', error)
+    process.exit(1)
   }
 }
 
-/**
- * Create three user accounts with specified credentials
- */
-async function seedUsers(payload: Payload): Promise<void> {
-  console.log('Seeding users...')
-
-  // Note: Pass plain passwords - Payload's auth system will hash them automatically
-  const users = [
-    {
-      email: 'admin@example.com',
-      password: 'test',
-      role: 'admin',
-      name: 'Admin User',
-      active: true,
-      twoFactorEnabled: false,
-    },
-    {
-      email: 'caregiver@example.com',
-      password: 'test',
-      role: 'caregiver',
-      name: 'Caregiver User',
-      active: true,
-      twoFactorEnabled: false,
-    },
-    {
-      email: 'kitchen@example.com',
-      password: 'test',
-      role: 'kitchen',
-      name: 'Kitchen User',
-      active: true,
-      twoFactorEnabled: false,
-    },
-  ]
-
-  for (const user of users) {
-    await payload.create({
-      collection: 'users',
-      data: user,
-    })
-    console.log(`Created user: ${user.email}`)
-  }
-}
-
-/**
- * Generate 10+ sample residents with varied dietary restrictions
- */
-async function seedResidents(payload: Payload): Promise<void> {
-  console.log('Seeding residents...')
-
+async function seedResidents(payload: any) {
   const residents = [
     {
       name: 'Maria Schmidt',
@@ -247,21 +218,23 @@ async function seedResidents(payload: Payload): Promise<void> {
   ]
 
   for (const resident of residents) {
-    await payload.create({
-      collection: 'residents',
-      data: resident,
-    })
-    console.log(`Created resident: ${resident.name}`)
+    try {
+      await payload.create({
+        collection: 'residents',
+        data: resident,
+      })
+      console.log(`✅ Created resident: ${resident.name}`)
+    } catch (error: any) {
+      if (error.message?.includes('duplicate') || error.message?.includes('unique')) {
+        console.log(`⚠️  Resident already exists: ${resident.name}`)
+      } else {
+        console.error(`❌ Failed to create resident ${resident.name}:`, error.message)
+      }
+    }
   }
 }
 
-/**
- * Generate 20+ sample meal orders across all meal types and dates
- * Include mix of pending and prepared orders
- */
-async function seedMealOrders(payload: Payload): Promise<void> {
-  console.log('Seeding meal orders...')
-
+async function seedMealOrders(payload: any) {
   // Get all residents and users for references
   const residentsResult = await payload.find({
     collection: 'residents',
@@ -280,53 +253,34 @@ async function seedMealOrders(payload: Payload): Promise<void> {
   })
   const caregiver = usersResult.docs[0]
 
-  const kitchenResult = await payload.find({
-    collection: 'users',
-    where: {
-      role: {
-        equals: 'kitchen',
-      },
-    },
-    limit: 1,
-  })
-  const kitchenUser = kitchenResult.docs[0]
-
-  if (!caregiver || !kitchenUser) {
-    console.error('Required users not found for seeding meal orders')
+  if (!caregiver) {
+    console.error('Caregiver user not found. Please run seed:users first.')
     return
   }
 
-  // Generate dates for the next 3 days
+  // Generate dates for today and tomorrow
   const today = new Date()
-  const dates = [
-    new Date(today),
-    new Date(today.getTime() + 24 * 60 * 60 * 1000),
-    new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000),
-  ]
+  const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
+  const dates = [today, tomorrow]
 
   const mealTypes: Array<'breakfast' | 'lunch' | 'dinner'> = ['breakfast', 'lunch', 'dinner']
-  const statuses: Array<'pending' | 'prepared'> = ['pending', 'prepared']
 
   let orderCount = 0
 
-  // Create meal orders for first 8 residents across different dates and meal types
-  for (let i = 0; i < Math.min(8, residents.length); i++) {
+  // Create meal orders for first 6 residents
+  for (let i = 0; i < Math.min(6, residents.length); i++) {
     const resident = residents[i]
     
     for (const date of dates) {
       for (const mealType of mealTypes) {
-        // Create about 24 orders (8 residents × 3 meal types, varying dates)
-        if (orderCount >= 24) break
-
-        const status = statuses[Math.floor(Math.random() * statuses.length)]
-        const urgent = Math.random() < 0.2 // 20% chance of urgent
+        if (orderCount >= 18) break // Limit to 18 orders
 
         const orderData: any = {
           resident: resident.id,
           date: date.toISOString().split('T')[0],
           mealType,
-          status,
-          urgent,
+          status: 'pending',
+          urgent: false,
           createdBy: caregiver.id,
           updatedBy: caregiver.id,
         }
@@ -334,52 +288,51 @@ async function seedMealOrders(payload: Payload): Promise<void> {
         // Add meal-specific options
         if (mealType === 'breakfast') {
           orderData.breakfastOptions = {
-            followsPlan: Math.random() < 0.7,
-            breadItems: ['brötchen', 'vollkornbrötchen'],
+            followsPlan: true,
+            breadItems: ['brötchen'],
             breadPreparation: ['geschnitten'],
             spreads: ['butter', 'konfitüre'],
-            porridge: Math.random() < 0.3,
-            beverages: ['kaffee', 'milch_heiß'],
-            additions: ['zucker'],
+            porridge: false,
+            beverages: ['kaffee'],
+            additions: [],
           }
         } else if (mealType === 'lunch') {
           orderData.lunchOptions = {
-            portionSize: ['small', 'large', 'vegetarian'][Math.floor(Math.random() * 3)],
-            soup: Math.random() < 0.6,
-            dessert: Math.random() < 0.7,
+            portionSize: 'large',
+            soup: true,
+            dessert: true,
             specialPreparations: [],
             restrictions: [],
           }
         } else if (mealType === 'dinner') {
           orderData.dinnerOptions = {
-            followsPlan: Math.random() < 0.7,
-            breadItems: ['graubrot', 'vollkornbrot'],
+            followsPlan: true,
+            breadItems: ['graubrot'],
             breadPreparation: ['geschmiert'],
-            spreads: ['butter', 'margarine'],
-            soup: Math.random() < 0.4,
-            porridge: Math.random() < 0.2,
-            noFish: Math.random() < 0.3,
+            spreads: ['butter'],
+            soup: false,
+            porridge: false,
+            noFish: false,
             beverages: ['tee'],
-            additions: ['zucker'],
+            additions: [],
           }
         }
 
-        // Add prepared metadata if status is prepared
-        if (status === 'prepared') {
-          orderData.preparedBy = kitchenUser.id
-          orderData.preparedAt = new Date(date.getTime() - Math.random() * 3600000).toISOString()
+        try {
+          await payload.create({
+            collection: 'meal-orders',
+            data: orderData,
+          })
+          orderCount++
+          console.log(`✅ Created meal order ${orderCount}: ${resident.name} - ${mealType} - ${date.toISOString().split('T')[0]}`)
+        } catch (error: any) {
+          console.error(`❌ Failed to create meal order:`, error.message)
         }
-
-        await payload.create({
-          collection: 'meal-orders',
-          data: orderData,
-        })
-
-        orderCount++
-        console.log(`Created meal order ${orderCount}: ${resident.name} - ${mealType} - ${date.toISOString().split('T')[0]}`)
       }
     }
   }
 
-  console.log(`Created ${orderCount} meal orders`)
+  console.log(`\n✅ Created ${orderCount} meal orders`)
 }
+
+seedSampleData()

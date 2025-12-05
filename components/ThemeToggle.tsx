@@ -36,23 +36,24 @@ export default function ThemeToggle() {
   const applyTheme = (newTheme: Theme) => {
     const root = document.documentElement
     
+    // Remove both classes first to ensure clean state
+    root.classList.remove('light', 'dark')
+    
     if (newTheme === 'system') {
       // Use system preference
       const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       if (systemPrefersDark) {
         root.classList.add('dark')
-        root.classList.remove('light')
       } else {
         root.classList.add('light')
-        root.classList.remove('dark')
       }
     } else if (newTheme === 'dark') {
       root.classList.add('dark')
-      root.classList.remove('light')
     } else {
       root.classList.add('light')
-      root.classList.remove('dark')
     }
+    
+    console.log('Theme applied:', newTheme, 'Classes:', root.classList.toString())
   }
 
   const toggleTheme = () => {
@@ -66,16 +67,24 @@ export default function ThemeToggle() {
       newTheme = 'light'
     }
     
+    console.log('Toggling theme from', theme, 'to', newTheme)
     setTheme(newTheme)
     localStorage.setItem('theme', newTheme)
     applyTheme(newTheme)
+    
+    // Force a small delay to ensure DOM updates
+    setTimeout(() => {
+      console.log('After toggle - HTML classes:', document.documentElement.classList.toString())
+      console.log('After toggle - localStorage theme:', localStorage.getItem('theme'))
+    }, 100)
   }
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
       <button
-        className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 min-h-touch min-w-touch flex items-center justify-center"
+        className="p-3 rounded-lg bg-gray-200 dark:bg-gray-700 min-h-touch min-w-touch flex items-center justify-center
+                   shadow-lg border-2 border-gray-300 dark:border-gray-600"
         aria-label="Toggle theme"
       >
         <span className="w-5 h-5" />
@@ -86,8 +95,9 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 
-                 transition-colors min-h-touch min-w-touch flex items-center justify-center"
+      className="p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 
+                 transition-colors min-h-touch min-w-touch flex items-center justify-center
+                 shadow-lg border-2 border-gray-300 dark:border-gray-600"
       aria-label={`Current theme: ${theme}. Click to change theme`}
       title={`Current theme: ${theme}`}
     >
@@ -109,7 +119,7 @@ export default function ThemeToggle() {
       )}
       {theme === 'dark' && (
         <svg
-          className="w-5 h-5 text-gray-200"
+          className="w-5 h-5 text-gray-800 dark:text-gray-200"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

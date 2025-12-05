@@ -3,6 +3,31 @@
  * Run with: npm run seed
  */
 
+// Load environment variables from .env file
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
+
+// Manually load .env file
+try {
+  const envPath = resolve(process.cwd(), '.env')
+  const envContent = readFileSync(envPath, 'utf-8')
+  
+  envContent.split('\n').forEach(line => {
+    const trimmedLine = line.trim()
+    if (trimmedLine && !trimmedLine.startsWith('#')) {
+      const [key, ...valueParts] = trimmedLine.split('=')
+      if (key && valueParts.length > 0) {
+        const value = valueParts.join('=').trim()
+        process.env[key.trim()] = value
+      }
+    }
+  })
+  
+  console.log('Environment variables loaded from .env')
+} catch (error) {
+  console.warn('Could not load .env file:', error)
+}
+
 // Set environment variable
 process.env.SEED_DATABASE = 'true'
 

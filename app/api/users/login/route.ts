@@ -93,9 +93,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify password
-    const passwordMatch = await bcrypt.compare(password, user.password)
-    if (!passwordMatch) {
+    // Verify password using Payload's auth system
+    try {
+      const loginResult = await payload.login({
+        collection: 'users',
+        data: {
+          email,
+          password,
+        },
+      })
+      
+      // If login succeeds, loginResult will contain the user and token
+      if (!loginResult.user) {
+        throw new Error('Login failed')
+      }
+    } catch (error) {
       console.warn(`Failed login attempt for email: ${email} - Invalid password`)
       recordFailedAttempt(ip)
       await logAuthAttempt(payload, email, false, request, 'Invalid password')

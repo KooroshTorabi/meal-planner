@@ -14,6 +14,7 @@
  */
 
 import { useState } from 'react'
+import AuthGuard from '@/components/AuthGuard'
 
 interface ReportSummary {
   totalOrders: number
@@ -105,7 +106,8 @@ export default function ReportsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6" role="main" aria-label="Meal Orders Reports">
+    <AuthGuard allowedRoles={['admin', 'caregiver', 'kitchen']}>
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6" role="main" aria-label="Meal Orders Reports">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 xs:mb-6 sm:mb-8">
           Meal Orders Reports
@@ -396,5 +398,6 @@ export default function ReportsPage() {
         )}
       </div>
     </main>
+    </AuthGuard>
   )
 }

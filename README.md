@@ -148,19 +148,40 @@ Copy the example environment file:
 cp .env.example .env
 ```
 
-Edit `.env` and configure the following variables (see [Configuration](#configuration) section for details):
+Edit `.env` and update the following required variables:
 
-```env
-# Required
-DATABASE_URI=postgresql://postgres:password@localhost:5432/meal_planner
-PAYLOAD_SECRET=your-secure-random-string-here
-JWT_SECRET=your-jwt-secret-here
+```bash
+# Database
+DATABASE_URI=postgresql://postgres:your_password@localhost:5432/meal_planner
 
-# Optional (with defaults)
+# Payload CMS
+PAYLOAD_SECRET=your-secret-key-here-change-in-production
+
+# JWT
+JWT_SECRET=your-jwt-secret-here-change-in-production
+
+# Server URL
 NEXT_PUBLIC_SERVER_URL=http://localhost:3000
-JWT_ACCESS_TOKEN_EXPIRY=15m
-JWT_REFRESH_TOKEN_EXPIRY=7d
 ```
+
+### 5. Set Up Authentication
+
+Run the automated setup script to initialize the database and create test users:
+
+```bash
+npm run setup:auth
+```
+
+This will:
+- Reset the database
+- Create the schema
+- Seed test users (admin, caregiver, kitchen)
+- Configure the system for runtime
+
+**Test Credentials:**
+- Admin: `admin@example.com` / `test`
+- Caregiver: `caregiver@example.com` / `test`
+- Kitchen: `kitchen@example.com` / `test`
 
 ## Configuration
 
@@ -241,10 +262,16 @@ npm run dev
 
 The application will be available at [http://localhost:3000](http://localhost:3000)
 
+### Logging In
+
+Access the login page at [http://localhost:3000/login](http://localhost:3000/login) or click the "Sign In" button on the home page.
+
 **Default Credentials** (after seeding):
 - Admin: `admin@example.com` / `test`
 - Caregiver: `caregiver@example.com` / `test`
 - Kitchen: `kitchen@example.com` / `test`
+
+For detailed authentication information, see the [Authentication Guide](docs/AUTHENTICATION_GUIDE.md).
 
 ### Production Mode
 
@@ -427,6 +454,7 @@ meal-planner/
 ├── docs/                         # Documentation
 │   ├── ACCESSIBILITY_SUMMARY.md # Accessibility features
 │   ├── API_DOCUMENTATION.md     # API endpoint reference
+│   ├── AUTHENTICATION_GUIDE.md  # Login and authentication guide
 │   ├── DATA_MODELS.md           # Database schema documentation
 │   ├── ERROR_HANDLING_IMPLEMENTATION.md
 │   ├── PERFORMANCE_OPTIMIZATIONS.md
