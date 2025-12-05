@@ -177,18 +177,8 @@ export const Users: CollectionConfig = {
     },
   ],
   hooks: {
-    beforeChange: [
-      async ({ data, req, operation }) => {
-        // Hash password on create or update if password is provided
-        if (operation === 'create' || (operation === 'update' && data.password)) {
-          if (data.password) {
-            const saltRounds = 12
-            data.password = await bcrypt.hash(data.password, saltRounds)
-          }
-        }
-        return data
-      },
-    ],
+    // Note: Password hashing is handled automatically by Payload's auth system
+    // Do not manually hash passwords in beforeChange hook
     afterChange: [
       async ({ doc, operation, previousDoc }) => {
         // Invalidate user permissions cache if role changed

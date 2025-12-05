@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ThemeToggle from "@/components/ThemeToggle";
+import Header from "@/components/Header";
 import KeyboardNavigation from "@/components/KeyboardNavigation";
 import SkipLink from "@/components/SkipLink";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
@@ -28,6 +28,33 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme') || 'system';
+                  const root = document.documentElement;
+                  
+                  if (theme === 'dark') {
+                    root.classList.add('dark');
+                  } else if (theme === 'light') {
+                    root.classList.add('light');
+                  } else {
+                    // System preference
+                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                      root.classList.add('dark');
+                    } else {
+                      root.classList.add('light');
+                    }
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -37,10 +64,8 @@ export default function RootLayout({
         {/* Keyboard navigation shortcuts */}
         <KeyboardNavigation />
         
-        {/* Theme Toggle - Fixed position in top right */}
-        <div className="fixed top-4 right-4 z-50">
-          <ThemeToggle />
-        </div>
+        {/* Header with user info and theme toggle */}
+        <Header />
         
         {/* Keyboard Shortcuts Help - Fixed position in bottom right */}
         <KeyboardShortcutsHelp />

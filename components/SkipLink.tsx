@@ -11,25 +11,7 @@ export default function SkipLink() {
   return (
     <a
       href="#main-content"
-      className="skip-link"
-      style={{
-        position: 'absolute',
-        top: '-40px',
-        left: 0,
-        background: '#3b82f6',
-        color: 'white',
-        padding: '8px 16px',
-        textDecoration: 'none',
-        zIndex: 100,
-        borderRadius: '0 0 4px 0',
-        fontWeight: 500,
-      }}
-      onFocus={(e) => {
-        e.currentTarget.style.top = '0'
-      }}
-      onBlur={(e) => {
-        e.currentTarget.style.top = '-40px'
-      }}
+      className="absolute -top-10 left-0 bg-primary-600 text-white px-4 py-2 rounded-br z-50 font-medium focus:top-0 transition-all"
     >
       Skip to main content
     </a>

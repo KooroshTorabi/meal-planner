@@ -1,25 +1,30 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
   --card-background: #ffffff;
   --border-color: #e5e7eb;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root.light {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card-background: #ffffff;
+  --border-color: #e5e7eb;
+  color-scheme: light;
 }
 
 /* Dark mode colors - only applied when .dark class is present */
-.dark {
+:root.dark {
   --background: #0f172a;
   --foreground: #f1f5f9;
   --card-background: #1e293b;
   --border-color: #334155;
+  color-scheme: dark;
 }
 
 /* Respect system preference if no explicit theme is set */
@@ -29,21 +34,38 @@
     --foreground: #f1f5f9;
     --card-background: #1e293b;
     --border-color: #334155;
+    color-scheme: dark;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+html {
+  background-color: #ffffff;
+  color: #171717;
 }
 
-/* Ensure smooth transitions for theme changes */
-* {
-  transition-property: background-color, border-color, color, fill, stroke;
+html.dark {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+}
+
+html.light {
+  background-color: #ffffff !important;
+  color: #171717 !important;
+}
+
+body {
+  background-color: inherit;
+  color: inherit;
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+}
+
+/* Ensure smooth transitions for theme changes - only for specific elements */
+html, body, main, div, section, article, aside, header, footer, nav {
+  transition-property: background-color, border-color, color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+  transition-duration: 200ms;
 }
 
 /* Focus indicators for accessibility */

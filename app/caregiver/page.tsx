@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import AuthGuard from '@/components/AuthGuard'
 import ResidentSelector from '@/components/caregiver/ResidentSelector'
 import MealOrderForm from '@/components/caregiver/MealOrderForm'
 import MealOrderList from '@/components/caregiver/MealOrderList'
@@ -25,7 +26,8 @@ export default function CaregiverPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900" role="main" aria-label="Caregiver Meal Order Management">
+    <AuthGuard allowedRoles={['caregiver', 'admin']}>
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900" role="main" aria-label="Caregiver Meal Order Management">
       {/* Responsive container with proper padding for all screen sizes */}
       <div className="container mx-auto px-4 xs:px-4 sm:px-6 md:px-8 py-6 xs:py-6 sm:py-8 md:py-10">
         {/* Responsive heading */}
@@ -62,5 +64,6 @@ export default function CaregiverPage() {
         </div>
       </div>
     </main>
+    </AuthGuard>
   )
 }

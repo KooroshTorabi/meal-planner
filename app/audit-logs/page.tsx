@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import AuthGuard from '@/components/AuthGuard'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
@@ -140,7 +141,8 @@ export default function AuditLogsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
+    <AuthGuard allowedRoles={['admin']}>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
           Audit Logs
@@ -394,5 +396,6 @@ export default function AuditLogsPage() {
         )}
       </div>
     </div>
+    </AuthGuard>
   )
 }

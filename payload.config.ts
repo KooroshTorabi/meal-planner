@@ -20,6 +20,8 @@ export default buildConfig({
     },
     // Enable migrations for schema management
     migrationDir: path.resolve(__dirname, 'migrations'),
+    // Disable automatic schema push to prevent conflicts
+    push: false,
   }),
   
   editor: lexicalEditor({}),

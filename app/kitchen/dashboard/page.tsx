@@ -13,6 +13,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import AuthGuard from '@/components/AuthGuard'
 
 interface IngredientSummary {
   name: string
@@ -126,7 +127,8 @@ export default function KitchenDashboard() {
   }) || []
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6 md:p-8" role="main" aria-label="Kitchen Dashboard">
+    <AuthGuard allowedRoles={['kitchen', 'admin']}>
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 xs:p-4 sm:p-6 md:p-8" role="main" aria-label="Kitchen Dashboard">
       <div className="max-w-7xl mx-auto">
         {/* Header - Responsive text sizes */}
         <header className="mb-6 xs:mb-6 sm:mb-8">
@@ -440,5 +442,6 @@ export default function KitchenDashboard() {
         )}
       </div>
     </main>
+    </AuthGuard>
   )
 }
