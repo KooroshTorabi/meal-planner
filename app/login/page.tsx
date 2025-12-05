@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -54,7 +55,12 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white flex items-center justify-center p-4">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white flex items-center justify-center p-4 relative">
+      {/* Theme toggle in top right corner */}
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+      
       <div className="w-full max-w-md">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           {/* Header */}

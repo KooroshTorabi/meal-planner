@@ -16,7 +16,8 @@
     "seed:data": "tsx scripts/seed-sample-data.ts",
     "reset-db": "tsx scripts/reset-db.ts",
     "add-indexes": "tsx scripts/add-indexes.ts",
-    "setup:auth": "tsx scripts/setup-auth.ts"
+    "setup:auth": "tsx scripts/setup-auth.ts",
+    "remove-duplicates": "tsx scripts/remove-duplicate-residents.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.0.0-beta.135",

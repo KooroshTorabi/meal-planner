@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
+import ConditionalHeader from "@/components/ConditionalHeader";
 import KeyboardNavigation from "@/components/KeyboardNavigation";
 import SkipLink from "@/components/SkipLink";
 import KeyboardShortcutsHelp from "@/components/KeyboardShortcutsHelp";
@@ -64,8 +64,8 @@ export default function RootLayout({
         {/* Keyboard navigation shortcuts */}
         <KeyboardNavigation />
         
-        {/* Header with user info and theme toggle */}
-        <Header />
+        {/* Header with user info and theme toggle (hidden on login page) */}
+        <ConditionalHeader />
         
         {/* Keyboard Shortcuts Help - Fixed position in bottom right */}
         <KeyboardShortcutsHelp />

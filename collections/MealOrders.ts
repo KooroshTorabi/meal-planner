@@ -241,67 +241,80 @@ export const MealOrders: CollectionConfig = {
 
         // Create versioned record for all changes (create, update, delete)
         // Skip versioning during seed (when SEED_DATABASE env var is set)
-        // Skip if doc.id is not available (can happen during initial seed)
+        // Skip if doc.id is not available (can happen during initial creation)
         if ((operation === 'create' || operation === 'update') && doc.id && !process.env.SEED_DATABASE) {
-          // Get the current version count for this document
-          const existingVersions = await req.payload.find({
-            collection: 'versioned-records',
-            where: {
-              and: [
-                {
-                  collectionName: {
-                    equals: 'meal-orders',
+          try {
+            // Get the current version count for this document
+            const existingVersions = await req.payload.find({
+              collection: 'versioned-records',
+              where: {
+                and: [
+                  {
+                    collectionName: {
+                      equals: 'meal-orders',
+                    },
                   },
-                },
-                {
-                  documentId: {
-                    equals: doc.id,
+                  {
+                    documentId: {
+                      equals: doc.id,
+                    },
                   },
-                },
-              ],
-            },
-            limit: 1,
-            sort: '-version',
-          })
+                ],
+              },
+              limit: 1,
+              sort: '-version',
+            })
 
-          const nextVersion = existingVersions.docs.length > 0 
-            ? (existingVersions.docs[0].version as number) + 1 
-            : 1
+            const nextVersion = existingVersions.docs.length > 0 
+              ? (existingVersions.docs[0].version as number) + 1 
+              : 1
 
-          // Determine which fields changed
-          const changedFields: string[] = []
-          if (operation === 'update' && previousDoc) {
-            // Compare previous and current document to find changed fields
-            const fieldsToCheck = [
-              'resident', 'date', 'mealType', 'status', 'urgent',
-              'breakfastOptions', 'lunchOptions', 'dinnerOptions',
-              'specialNotes', 'preparedAt', 'preparedBy'
-            ]
-            
-            for (const field of fieldsToCheck) {
-              if (JSON.stringify(previousDoc[field]) !== JSON.stringify(doc[field])) {
-                changedFields.push(field)
+            // Determine which fields changed
+            const changedFields: string[] = []
+            if (operation === 'update' && previousDoc) {
+              // Compare previous and current document to find changed fields
+              const fieldsToCheck = [
+                'resident', 'date', 'mealType', 'status', 'urgent',
+                'breakfastOptions', 'lunchOptions', 'dinnerOptions',
+                'specialNotes', 'preparedAt', 'preparedBy'
+              ]
+              
+              for (const field of fieldsToCheck) {
+                if (JSON.stringify(previousDoc[field]) !== JSON.stringify(doc[field])) {
+                  changedFields.push(field)
+                }
               }
             }
+
+            // Create the versioned record with the snapshot BEFORE the change
+            // For create operations, we store the initial state
+            // For update operations, we store the previous state
+            const snapshot = operation === 'create' ? doc : previousDoc
+
+            // Ensure documentId is a string
+            const documentId = String(doc.id)
+            
+            if (!documentId || documentId === 'undefined' || documentId === 'null') {
+              console.warn('Skipping versioned record creation: invalid document ID')
+              return
+            }
+
+            await req.payload.create({
+              collection: 'versioned-records',
+              data: {
+                collectionName: 'meal-orders',
+                documentId: documentId,
+                version: nextVersion,
+                snapshot: snapshot,
+                changeType: operation,
+                changedFields: changedFields.map(field => ({ field })),
+                changedBy: req.user?.id,
+              },
+            })
+          } catch (error) {
+            // Log versioning errors but don't fail the request
+            console.error('Failed to create versioned record:', error)
           }
-
-          // Create the versioned record with the snapshot BEFORE the change
-          // For create operations, we store the initial state
-          // For update operations, we store the previous state
-          const snapshot = operation === 'create' ? doc : previousDoc
-
-          await req.payload.create({
-            collection: 'versioned-records',
-            data: {
-              collectionName: 'meal-orders',
-              documentId: doc.id,
-              version: nextVersion,
-              snapshot: snapshot,
-              changeType: operation,
-              changedFields: changedFields.map(field => ({ field })),
-              changedBy: req.user?.id,
-            },
-          })
         }
 
         // Log data modification to audit logs

@@ -3,39 +3,20 @@
 import { useOptionalAuth } from '@/lib/hooks/useAuth'
 
 export default function Home() {
-  const { user, loading, logout } = useOptionalAuth()
+  const { user } = useOptionalAuth()
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header with Sign In/Out button */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+        {/* Page Title */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Meal Planner System
           </h1>
-          {loading ? (
-            <div className="px-6 py-3">
-              <div className="animate-pulse bg-gray-300 dark:bg-gray-700 h-10 w-24 rounded-lg"></div>
-            </div>
-          ) : user ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                Welcome, <span className="font-medium">{user.name}</span> ({user.role})
-              </span>
-              <button
-                onClick={logout}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-              >
-                Sign Out
-              </button>
-            </div>
-          ) : (
-            <a
-              href="/login"
-              className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-            >
-              Sign In
-            </a>
+          {user && (
+            <p className="text-gray-600 dark:text-gray-400">
+              Welcome back, <span className="font-medium">{user.name}</span>!
+            </p>
           )}
         </div>
         
