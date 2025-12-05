@@ -74,9 +74,7 @@ export default function AuditLogsPage() {
       if (filters.endDate) params.append('endDate', filters.endDate)
 
       const response = await fetch(`/api/audit-logs?${params.toString()}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
+        credentials: 'include', // Include cookies for authentication
       })
 
       if (!response.ok) {
