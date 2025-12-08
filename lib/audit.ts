@@ -144,6 +144,41 @@ export async function logUnauthorizedAccess(
 }
 
 /**
+ * Log unauthorized access attempt from Payload context
+ * Used in collection access control hooks
+ */
+export async function logUnauthorizedAccessFromPayload(
+  payload: Payload,
+  userId: string,
+  email: string,
+  resource: string,
+  action: string,
+  resourceId?: string,
+  details?: Record<string, any>
+): Promise<void> {
+  try {
+    await payload.create({
+      collection: 'audit-logs',
+      data: {
+        action: 'unauthorized_access',
+        userId,
+        email,
+        status: 'denied',
+        ipAddress: 'unknown',
+        resource,
+        resourceId,
+        details: {
+          ...details,
+          attemptedAction: action,
+        },
+      },
+    })
+  } catch (error) {
+    console.error('Failed to log unauthorized access from Payload:', error)
+  }
+}
+
+/**
  * Log data modification (create, update, delete)
  */
 export async function logDataModification(
