@@ -982,6 +982,387 @@ export async function GET() {
           },
         },
       },
+      '/api/meal-orders': {
+        get: {
+          tags: ['Meal Orders'],
+          summary: 'Get meal orders',
+          description: 'Retrieve meal orders with optional filtering',
+          parameters: [
+            {
+              name: 'date',
+              in: 'query',
+              schema: { type: 'string', format: 'date' },
+              description: 'Filter by date',
+            },
+            {
+              name: 'mealType',
+              in: 'query',
+              schema: {
+                type: 'string',
+                enum: ['breakfast', 'lunch', 'dinner'],
+              },
+              description: 'Filter by meal type',
+            },
+            {
+              name: 'status',
+              in: 'query',
+              schema: {
+                type: 'string',
+                enum: ['pending', 'prepared', 'completed'],
+              },
+              description: 'Filter by status',
+            },
+            {
+              name: 'residentId',
+              in: 'query',
+              schema: { type: 'string' },
+              description: 'Filter by resident ID',
+            },
+            {
+              name: 'limit',
+              in: 'query',
+              schema: { type: 'number', default: 50 },
+            },
+            {
+              name: 'page',
+              in: 'query',
+              schema: { type: 'number', default: 1 },
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Meal orders retrieved successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      docs: {
+                        type: 'array',
+                        items: {
+                          $ref: '#/components/schemas/MealOrder',
+                        },
+                      },
+                      totalDocs: { type: 'number' },
+                      limit: { type: 'number' },
+                      page: { type: 'number' },
+                      totalPages: { type: 'number' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          tags: ['Meal Orders'],
+          summary: 'Create meal order',
+          description: 'Create a new meal order',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/MealOrder',
+                },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: 'Meal order created successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/MealOrder',
+                  },
+                },
+              },
+            },
+            400: {
+              description: 'Invalid request',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/meal-orders/{id}': {
+        get: {
+          tags: ['Meal Orders'],
+          summary: 'Get meal order by ID',
+          description: 'Retrieve a specific meal order',
+          parameters: [
+            {
+              name: 'id',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Meal order ID',
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Meal order retrieved successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/MealOrder',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Meal order not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+        patch: {
+          tags: ['Meal Orders'],
+          summary: 'Update meal order',
+          description: 'Update a meal order (kitchen can only update status)',
+          parameters: [
+            {
+              name: 'id',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Meal order ID',
+            },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    status: {
+                      type: 'string',
+                      enum: ['pending', 'prepared', 'completed'],
+                      description: 'Order status',
+                    },
+                    urgent: {
+                      type: 'boolean',
+                      description: 'Urgent flag',
+                    },
+                    specialNotes: {
+                      type: 'string',
+                      description: 'Special notes',
+                    },
+                  },
+                },
+                examples: {
+                  'Mark as prepared': {
+                    value: {
+                      status: 'prepared',
+                    },
+                  },
+                  'Mark as completed': {
+                    value: {
+                      status: 'completed',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: 'Meal order updated successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/MealOrder',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Meal order not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            409: {
+              description: 'Version conflict detected',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      error: { type: 'string' },
+                      message: { type: 'string' },
+                      currentVersion: { type: 'object' },
+                      yourVersion: { type: 'object' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        delete: {
+          tags: ['Meal Orders'],
+          summary: 'Delete meal order',
+          description: 'Delete a meal order (only pending orders can be deleted)',
+          parameters: [
+            {
+              name: 'id',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'Meal order ID',
+            },
+          ],
+          responses: {
+            200: {
+              description: 'Meal order deleted successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string' },
+                    },
+                  },
+                },
+              },
+            },
+            403: {
+              description: 'Only pending orders can be deleted',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+            404: {
+              description: 'Meal order not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/users/login-payload': {
+        post: {
+          tags: ['Authentication'],
+          summary: 'User login (Payload)',
+          description: 'Authenticate with email and password using Payload CMS authentication. Returns access token.',
+          security: [],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['email', 'password'],
+                  properties: {
+                    email: {
+                      type: 'string',
+                      format: 'email',
+                      example: 'kitchen@example.com',
+                    },
+                    password: {
+                      type: 'string',
+                      format: 'password',
+                      example: 'test',
+                    },
+                  },
+                },
+                examples: {
+                  admin: {
+                    value: {
+                      email: 'admin@example.com',
+                      password: 'test',
+                    },
+                  },
+                  caregiver: {
+                    value: {
+                      email: 'caregiver@example.com',
+                      password: 'test',
+                    },
+                  },
+                  kitchen: {
+                    value: {
+                      email: 'kitchen@example.com',
+                      password: 'test',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: 'Login successful',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      user: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'number' },
+                          email: { type: 'string' },
+                          name: { type: 'string' },
+                          role: {
+                            type: 'string',
+                            enum: ['admin', 'caregiver', 'kitchen'],
+                          },
+                        },
+                      },
+                      accessToken: {
+                        type: 'string',
+                        description: 'JWT access token',
+                      },
+                      refreshToken: {
+                        type: 'string',
+                        description: 'JWT refresh token',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            401: {
+              description: 'Invalid credentials',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Error',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   }
 

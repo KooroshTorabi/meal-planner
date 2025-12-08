@@ -28,7 +28,7 @@ The Meal Planner System digitizes the manual, paper-based meal ordering workflow
 
 - **Caregivers** can efficiently capture meal preferences on tablets during their rounds
 - **Kitchen Staff** can view aggregated ingredient needs and track meal preparation progress
-- **Administrators** can manage users, residents, and access comprehensive reports
+- **Administrators** can manage users, residents, policies, and access comprehensive reports through a dedicated admin panel
 
 ### The Problem It Solves
 
@@ -46,10 +46,11 @@ The Meal Planner System digitizes the manual, paper-based meal ordering workflow
 - ✅ **Multi-Channel Alerts**: Urgent order notifications via dashboard, WebSocket, push, and email
 
 ### Security & Access Control
-- ✅ **Role-Based Access Control (RBAC)**: Three user roles with granular permissions
-- ✅ **JWT Authentication**: Access tokens with refresh token support
-- ✅ **Two-Factor Authentication (2FA)**: Optional TOTP-based 2FA
-- ✅ **Rate Limiting**: Protection against brute force attacks
+- ✅ **Role-Based Access Control (RBAC)**: Three user roles with granular permissions and centralized policy management
+- ✅ **JWT Authentication**: Access tokens with secure token handling
+- ✅ **Admin Dashboard**: Dedicated admin panel for system management
+- ✅ **User Management**: Full CRUD operations for users with role assignments
+- ✅ **Policy Editor**: Interactive policy editor for role-based access control
 - ✅ **Audit Logging**: Comprehensive logging of all security events
 
 ### User Experience
@@ -76,9 +77,9 @@ The Meal Planner System digitizes the manual, paper-based meal ordering workflow
 
 ### Frontend
 - **UI Framework**: React 19
-- **Styling**: TailwindCSS 4 with dark mode support
+- **Styling**: TailwindCSS 3 with dark mode support
 - **Components**: Custom UI component library
-- **Real-Time**: WebSocket (ws library)
+- **State Management**: React hooks (useState, useEffect, useCallback)
 
 ### Testing
 - **Unit Tests**: Jest with ts-jest
@@ -377,6 +378,8 @@ See the [Testing Strategy](docs/TESTING_STRATEGY.md) document for guidelines on 
 meal-planner/
 ├── app/                          # Next.js App Router
 │   ├── api/                      # API routes
+│   │   ├── admin/               # Admin panel endpoints
+│   │   │   └── policies/        # Policy management
 │   │   ├── alerts/              # Alert endpoints
 │   │   ├── archived/            # Archived data retrieval
 │   │   ├── audit-logs/          # Audit log endpoints
@@ -384,7 +387,11 @@ meal-planner/
 │   │   ├── meal-orders/         # Meal order CRUD
 │   │   ├── reports/             # Reporting endpoints
 │   │   ├── residents/           # Resident search
-│   │   └── users/               # Authentication endpoints
+│   │   └── users/               # Authentication and user management
+│   ├── admin/                   # Admin panel
+│   │   ├── page.tsx             # Admin dashboard
+│   │   ├── users/               # User management UI
+│   │   └── policies/            # Policy editor UI
 │   ├── audit-logs/              # Audit log UI
 │   ├── caregiver/               # Caregiver interface
 │   ├── kitchen/                 # Kitchen dashboard UI
@@ -423,6 +430,8 @@ meal-planner/
 │   ├── auth/                    # Authentication utilities
 │   │   ├── rate-limiter.ts      # Rate limiting
 │   │   └── tokens.ts            # JWT token management
+│   ├── policies/                # RBAC policies
+│   │   └── rbac.ts              # Centralized role-based access control
 │   ├── cache/                   # Caching layer
 │   │   ├── index.ts             # Cache utilities
 │   │   ├── permissions.ts       # Permission caching
@@ -487,17 +496,24 @@ meal-planner/
 The system implements Role-Based Access Control (RBAC) with three distinct roles:
 
 ### 1. Admin
-**Full system access** with all permissions.
+**Full system access** with all permissions and dedicated admin panel.
 
 **Capabilities**:
-- ✅ Create, read, update, delete users
+- ✅ Access admin dashboard at `/admin`
+- ✅ Create, read, update, delete users with full name management
 - ✅ Manage user roles and permissions
+- ✅ Edit role-based access control policies via interactive editor
 - ✅ Create, read, update, delete residents
 - ✅ View all meal orders
 - ✅ Access audit logs and versioned records
 - ✅ Generate and export reports
 - ✅ Configure system settings
 - ✅ Access archived data
+
+**Admin Panel Features**:
+- User Management: Create, edit, activate/deactivate users
+- Policy Editor: Configure role permissions with visual interface
+- Quick access to all system areas (caregiver, kitchen, reports, audit logs)
 
 **Access**: All collections, all operations
 
@@ -562,10 +578,14 @@ For detailed narrative documentation, see [API_DOCUMENTATION.md](docs/API_DOCUME
 
 #### Authentication Endpoints
 - `POST /api/users/login` - Login with credentials
-- `POST /api/users/refresh` - Refresh access token
 - `POST /api/users/logout` - Logout and invalidate tokens
-- `POST /api/users/enable-2fa` - Enable two-factor authentication
-- `POST /api/users/verify-2fa` - Verify 2FA code
+- `GET /api/users` - List all users (admin only)
+- `POST /api/users` - Create new user (admin only)
+- `PATCH /api/users/:id` - Update user (admin only)
+- `DELETE /api/users/:id` - Delete user (admin only)
+
+#### Admin Endpoints
+- `POST /api/admin/policies` - Update RBAC policies (admin only)
 
 #### Meal Order Endpoints
 - `GET /api/meal-orders` - List meal orders
@@ -596,12 +616,14 @@ For detailed narrative documentation, see [API_DOCUMENTATION.md](docs/API_DOCUME
 - **Naming**: Use camelCase for variables, PascalCase for components
 - **Comments**: Document complex logic with JSDoc comments
 
-### Testing Requirements
+### Best Practices
 
 - Write tests for all new features
 - Maintain 80%+ code coverage
 - Use property-based testing for critical logic
 - Test accessibility with screen readers
+- Follow the centralized RBAC pattern for access control
+- Use dark mode classes (`dark:`) for all new UI components
 
 ### Git Workflow
 
@@ -639,19 +661,19 @@ Follow conventional commits:
 Before deploying to production:
 
 - [ ] Set `NODE_ENV=production`
-- [ ] Use strong secrets for `PAYLOAD_SECRET` and `JWT_SECRET`
+- [ ] Use strong secrets for `PAYLOAD_SECRET` and `JWT_SECRET` (generated with openssl)
 - [ ] Configure production database with backups
 - [ ] Enable HTTPS/TLS
 - [ ] Configure CORS appropriately
 - [ ] Set up monitoring and alerting
 - [ ] Configure logging aggregation
-- [ ] Enable rate limiting
 - [ ] Set up CDN for static assets
 - [ ] Configure health check endpoints
-- [ ] Test all user roles and permissions
-- [ ] Verify email and push notifications work
+- [ ] Test all user roles and permissions (admin, caregiver, kitchen)
+- [ ] Verify admin panel access controls work correctly
 - [ ] Run full test suite
 - [ ] Perform security audit
+- [ ] Review and update RBAC policies in `/lib/policies/rbac.ts`
 
 ### Environment-Specific Configuration
 

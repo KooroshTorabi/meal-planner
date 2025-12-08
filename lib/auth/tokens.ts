@@ -8,6 +8,7 @@ import crypto from 'crypto'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key-change-in-production'
+const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET || 'your-secret-key-change-in-production'
 
 const ACCESS_TOKEN_EXPIRY = '15m' // 15 minutes
 const REFRESH_TOKEN_EXPIRY = '7d' // 7 days
@@ -57,6 +58,28 @@ export function verifyAccessToken(token: string): TokenPayload | null {
     const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload
     return decoded
   } catch (error) {
+    return null
+  }
+}
+
+/**
+ * Verify a Payload token and return the payload
+ */
+export function verifyPayloadToken(token: string): any | null {
+  try {
+    const decoded = jwt.verify(token, PAYLOAD_SECRET)
+    return decoded
+  } catch (error: any) {
+    // Try with the actual env variable directly as fallback
+    try {
+      const envSecret = process.env.PAYLOAD_SECRET
+      if (envSecret) {
+        const decoded = jwt.verify(token, envSecret)
+        return decoded
+      }
+    } catch (e) {
+      // Ignore
+    }
     return null
   }
 }

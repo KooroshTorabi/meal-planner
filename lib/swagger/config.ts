@@ -12,7 +12,7 @@ export const swaggerConfig = {
       title: 'Meal Planner System API',
       version: '1.0.0',
       description: `
-# Meal Planner System API
+
 
 A comprehensive digital meal planning and ordering system for elderly care homes.
 

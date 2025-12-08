@@ -2,11 +2,77 @@
 
 import dynamic from 'next/dynamic'
 import 'swagger-ui-react/swagger-ui.css'
+import { useEffect } from 'react'
 
 // Dynamically import SwaggerUI to avoid SSR issues
 const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false })
 
 export default function ApiDocsPage() {
+  useEffect(() => {
+    // Add dark mode styles for Swagger UI
+    const style = document.createElement('style')
+    style.innerHTML = `
+      /* Dark mode styles for Swagger UI */
+      .dark .swagger-ui {
+        filter: invert(88%) hue-rotate(180deg);
+      }
+      
+      .dark .swagger-ui .microlight {
+        filter: invert(100%) hue-rotate(180deg);
+      }
+      
+      .dark .swagger-ui .renderedMarkdown img,
+      .dark .swagger-ui .topbar-wrapper img {
+        filter: invert(100%) hue-rotate(180deg);
+      }
+      
+      /* Fix specific Swagger UI elements in dark mode */
+      .dark .swagger-ui .opblock-tag {
+        border-color: rgba(59, 130, 246, 0.5);
+      }
+      
+      .dark .swagger-ui .opblock {
+        border-color: rgba(75, 85, 99, 0.5);
+        background: rgba(31, 41, 55, 0.3);
+      }
+      
+      .dark .swagger-ui .topbar {
+        background-color: rgb(17, 24, 39);
+        border-bottom: 1px solid rgb(55, 65, 81);
+      }
+      
+      .dark .swagger-ui .information-container {
+        background: transparent;
+      }
+      
+      .dark .swagger-ui select,
+      .dark .swagger-ui input[type=text],
+      .dark .swagger-ui input[type=email],
+      .dark .swagger-ui input[type=password],
+      .dark .swagger-ui textarea {
+        background-color: rgb(31, 41, 55);
+        border-color: rgb(75, 85, 99);
+        color: rgb(243, 244, 246);
+      }
+      
+      .dark .swagger-ui .btn {
+        background-color: rgb(59, 130, 246);
+        border-color: rgb(59, 130, 246);
+        color: white;
+      }
+      
+      .dark .swagger-ui .btn.cancel {
+        background-color: rgb(107, 114, 128);
+        border-color: rgb(107, 114, 128);
+      }
+    `
+    document.head.appendChild(style)
+    
+    return () => {
+      document.head.removeChild(style)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">

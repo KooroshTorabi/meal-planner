@@ -40,6 +40,9 @@ interface MealOrder {
   status: string
   urgent: boolean
   specialNotes?: string
+  breakfastOptions?: any
+  lunchOptions?: any
+  dinnerOptions?: any
 }
 
 interface Alert {
@@ -65,6 +68,7 @@ export default function KitchenDashboard() {
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null)
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null)
 
   // Fetch dashboard data when date or mealType changes
   useEffect(() => {
@@ -97,18 +101,18 @@ export default function KitchenDashboard() {
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     setUpdatingOrderId(orderId)
     try {
-      // In a real implementation, this would call the Payload API
-      // For now, we'll simulate the update
-      const response = await fetch(`/api/collections/meal-orders/${orderId}`, {
+      const response = await fetch(`/api/meal-orders/${orderId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ status: newStatus }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to update order status')
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to update order status')
       }
 
       // Refresh dashboard data
@@ -125,6 +129,148 @@ export default function KitchenDashboard() {
     if (statusFilter === 'all') return true
     return order.status === statusFilter
   }) || []
+
+  // Helper function to format meal options for display
+  const formatMealOptions = (order: MealOrder) => {
+    if (order.mealType === 'breakfast' && order.breakfastOptions) {
+      const opts = order.breakfastOptions
+      return (
+        <div className="space-y-2 text-sm">
+          {opts.followsPlan && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Follows Plan:</span>
+              <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">Yes</span>
+            </div>
+          )}
+          {opts.breadItems && opts.breadItems.length > 0 && (
+            <div>
+              <span className="font-medium">Bread:</span> {opts.breadItems.join(', ')}
+            </div>
+          )}
+          {opts.breadPreparation && opts.breadPreparation.length > 0 && (
+            <div>
+              <span className="font-medium">Preparation:</span> {opts.breadPreparation.join(', ')}
+            </div>
+          )}
+          {opts.spreads && opts.spreads.length > 0 && (
+            <div>
+              <span className="font-medium">Spreads:</span> {opts.spreads.join(', ')}
+            </div>
+          )}
+          {opts.porridge && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Porridge:</span>
+              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Yes</span>
+            </div>
+          )}
+          {opts.beverages && opts.beverages.length > 0 && (
+            <div>
+              <span className="font-medium">Beverages:</span> {opts.beverages.join(', ')}
+            </div>
+          )}
+          {opts.additions && opts.additions.length > 0 && (
+            <div>
+              <span className="font-medium">Additions:</span> {opts.additions.join(', ')}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    if (order.mealType === 'lunch' && order.lunchOptions) {
+      const opts = order.lunchOptions
+      return (
+        <div className="space-y-2 text-sm">
+          {opts.portionSize && (
+            <div>
+              <span className="font-medium">Portion:</span> {opts.portionSize}
+            </div>
+          )}
+          {opts.soup && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Soup:</span>
+              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Yes</span>
+            </div>
+          )}
+          {opts.dessert && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Dessert:</span>
+              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Yes</span>
+            </div>
+          )}
+          {opts.specialPreparations && opts.specialPreparations.length > 0 && (
+            <div>
+              <span className="font-medium">Special Prep:</span> {opts.specialPreparations.join(', ')}
+            </div>
+          )}
+          {opts.restrictions && opts.restrictions.length > 0 && (
+            <div>
+              <span className="font-medium">Restrictions:</span> {opts.restrictions.join(', ')}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    if (order.mealType === 'dinner' && order.dinnerOptions) {
+      const opts = order.dinnerOptions
+      return (
+        <div className="space-y-2 text-sm">
+          {opts.followsPlan && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Follows Plan:</span>
+              <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">Yes</span>
+            </div>
+          )}
+          {opts.breadItems && opts.breadItems.length > 0 && (
+            <div>
+              <span className="font-medium">Bread:</span> {opts.breadItems.join(', ')}
+            </div>
+          )}
+          {opts.breadPreparation && opts.breadPreparation.length > 0 && (
+            <div>
+              <span className="font-medium">Preparation:</span> {opts.breadPreparation.join(', ')}
+            </div>
+          )}
+          {opts.spreads && opts.spreads.length > 0 && (
+            <div>
+              <span className="font-medium">Spreads:</span> {opts.spreads.join(', ')}
+            </div>
+          )}
+          {opts.soup && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Soup:</span>
+              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Yes</span>
+            </div>
+          )}
+          {opts.porridge && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Porridge:</span>
+              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Yes</span>
+            </div>
+          )}
+          {opts.noFish && (
+            <div className="flex items-center gap-2">
+              <span className="font-medium">No Fish:</span>
+              <span className="px-2 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded">Yes</span>
+            </div>
+          )}
+          {opts.beverages && opts.beverages.length > 0 && (
+            <div>
+              <span className="font-medium">Beverages:</span> {opts.beverages.join(', ')}
+            </div>
+          )}
+          {opts.additions && opts.additions.length > 0 && (
+            <div>
+              <span className="font-medium">Additions:</span> {opts.additions.join(', ')}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    return <p className="text-sm text-gray-500 dark:text-gray-400">No meal options specified</p>
+  }
 
   return (
     <AuthGuard allowedRoles={['kitchen', 'admin']}>
@@ -379,7 +525,7 @@ export default function KitchenDashboard() {
                           : 'border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20'
                       }`}
                     >
-                      <div className="flex items-start justify-between">
+                      <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="font-medium text-gray-900 dark:text-white">
@@ -433,6 +579,32 @@ export default function KitchenDashboard() {
                           )}
                         </div>
                       </div>
+
+                      {/* View Details Button */}
+                      <button
+                        onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
+                      >
+                        <svg
+                          className={`w-4 h-4 transition-transform ${expandedOrderId === order.id ? 'rotate-90' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                        {expandedOrderId === order.id ? 'Hide Details' : 'View Details'}
+                      </button>
+
+                      {/* Expandable Details Section */}
+                      {expandedOrderId === order.id && (
+                        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                          <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+                            {order.mealType.charAt(0).toUpperCase() + order.mealType.slice(1)} Options
+                          </h4>
+                          {formatMealOptions(order)}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
