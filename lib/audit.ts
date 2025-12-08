@@ -11,11 +11,23 @@ import type { NextRequest } from 'next/server'
  */
 function getClientIp(request: NextRequest | Request): string {
   if ('headers' in request) {
-    return (
+    let ip = (
       request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
       request.headers.get('x-real-ip') ||
       'unknown'
     )
+    
+    // Convert IPv6 loopback to IPv4
+    if (ip === '::1' || ip === '::ffff:127.0.0.1') {
+      ip = '127.0.0.1'
+    }
+    
+    // Convert IPv6-mapped IPv4 addresses to plain IPv4
+    if (ip.startsWith('::ffff:')) {
+      ip = ip.substring(7)
+    }
+    
+    return ip
   }
   return 'unknown'
 }

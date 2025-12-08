@@ -343,13 +343,14 @@ export const MealOrders: CollectionConfig = {
               String(doc.id),
               userId,
               userEmail,
-              undefined,
+              undefined,  // Collection hooks don't have access to raw request
               {
                 mealType: doc.mealType,
                 status: doc.status,
                 urgent: doc.urgent,
                 resident: doc.resident,
                 date: doc.date,
+                source: 'collection-hook'
               }
             )
             console.log(`[Audit] ✅ Successfully logged ${action} for meal order ${doc.id}`)
@@ -366,26 +367,33 @@ export const MealOrders: CollectionConfig = {
     afterDelete: [
       async ({ req, id }) => {
         // Log data deletion to audit logs
-        if (req.user) {
-          try {
-            console.log(`[Audit] Logging data_delete for meal order ${id}`)
-            await logDataModification(
-              req.payload,
-              'data_delete',
-              'meal-orders',
-              String(id),
-              String(req.user.id),
-              req.user.email || 'unknown',
-              undefined,
-              {
-                deletedAt: new Date().toISOString(),
-              }
-            )
-            console.log(`[Audit] Successfully logged data_delete for meal order ${id}`)
-          } catch (error) {
-            console.error(`[Audit Error] Failed to log deletion for meal order ${id}:`, error)
-            // Don't fail the request if audit log fails
+        try {
+          console.log(`[Audit] Logging data_delete for meal order ${id}`)
+          
+          // If we have user context, log with it; otherwise use system context
+          const userId = req.user?.id ? String(req.user.id) : 'system'
+          const userEmail = req.user?.email || 'system@internal'
+          
+          if (!req.user) {
+            console.log(`[Audit] ⚠️  No user context in req - logging as system`)
           }
+          
+          await logDataModification(
+            req.payload,
+            'data_delete',
+            'meal-orders',
+            String(id),
+            userId,
+            userEmail,
+            undefined,
+            {
+              deletedAt: new Date().toISOString(),
+              source: 'collection-hook'
+            }
+          )
+          console.log(`[Audit] ✅ Successfully logged data_delete for meal order ${id}`)
+        } catch (error) {
+          console.error(`[Audit] ❌ Failed to log deletion for meal order ${id}:`, error instanceof Error ? error.message : String(error))
         }
 
         // Invalidate meal order caches after deletion
