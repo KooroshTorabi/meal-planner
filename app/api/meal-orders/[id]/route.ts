@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
+import { logDataModification } from '@/lib/audit'
+import { verifyPayloadToken } from '@/lib/auth/tokens'
 
 /**
  * PATCH /api/meal-orders/:id
@@ -50,6 +52,57 @@ export async function PATCH(
         id,
         data: body,
       })
+
+      // Log the update to audit logs
+      try {
+        console.log(`[Audit] Attempting to log data_update for meal order ${id}`)
+        
+        // Since we can't reliably get user context, log with available info
+        // The collection hook should capture proper user info when triggered by Payload
+        // This API endpoint logs serves as a secondary audit trail
+        const token = request.cookies.get('accessToken')?.value
+        
+        let userId = 'api-unknown'
+        let userEmail = 'api-unknown@system.local'
+        
+        // Try to decode token to get user info
+        if (token) {
+          try {
+            const decoded = verifyPayloadToken(token)
+            if (decoded && decoded.id) {
+              userId = String(decoded.id)
+            }
+            if (decoded && decoded.email) {
+              userEmail = decoded.email
+            }
+          } catch (tokenError) {
+            console.log(`[Audit] Could not decode token:`, tokenError instanceof Error ? tokenError.message : String(tokenError))
+          }
+        }
+        
+        console.log(`[Audit] Logging with userId=${userId}, email=${userEmail}`)
+        
+        await logDataModification(
+          payload,
+          'data_update',
+          'meal-orders',
+          id,
+          userId,
+          userEmail,
+          undefined,
+          {
+            mealType: updatedDoc.mealType,
+            status: updatedDoc.status,
+            urgent: updatedDoc.urgent,
+            resident: updatedDoc.resident,
+            date: updatedDoc.date,
+            source: 'api-endpoint'
+          }
+        )
+        console.log(`[Audit] ✅ Logged data_update for meal order ${id}`)
+      } catch (auditError) {
+        console.error(`[Audit] ❌ Error during audit logging:`, auditError instanceof Error ? auditError.message : String(auditError))
+      }
 
       return NextResponse.json(updatedDoc, { status: 200 })
     } catch (error: any) {
