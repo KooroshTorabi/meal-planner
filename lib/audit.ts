@@ -11,11 +11,23 @@ import type { NextRequest } from 'next/server'
  */
 function getClientIp(request: NextRequest | Request): string {
   if ('headers' in request) {
-    return (
+    let ip = (
       request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
       request.headers.get('x-real-ip') ||
       'unknown'
     )
+    
+    // Convert IPv6 loopback to IPv4
+    if (ip === '::1' || ip === '::ffff:127.0.0.1') {
+      ip = '127.0.0.1'
+    }
+    
+    // Convert IPv6-mapped IPv4 addresses to plain IPv4
+    if (ip.startsWith('::ffff:')) {
+      ip = ip.substring(7)
+    }
+    
+    return ip
   }
   return 'unknown'
 }
@@ -175,6 +187,125 @@ export async function logUnauthorizedAccessFromPayload(
     })
   } catch (error) {
     console.error('Failed to log unauthorized access from Payload:', error)
+  }
+}
+
+/**
+ * Log data modification (create, update, delete)
+ */
+/**
+ * Log authentication attempt
+ */
+export async function logAuthAttempt(
+  payload: Payload,
+  email: string,
+  success: boolean,
+  request?: NextRequest | Request,
+  errorMessage?: string
+): Promise<void> {
+  try {
+    await payload.create({
+      collection: 'audit-logs',
+      data: {
+        action: success ? 'login_success' : 'login_failure',
+        email,
+        status: success ? 'success' : 'failure',
+        ipAddress: request ? getClientIp(request) : 'unknown',
+        userAgent: request ? getUserAgent(request) : undefined,
+        resource: 'users',
+        errorMessage: errorMessage || (success ? undefined : 'Authentication failed'),
+      },
+    })
+  } catch (error) {
+    console.error('Failed to log auth attempt:', error)
+  }
+}
+
+/**
+ * Log 2FA enable action
+ */
+export async function log2FAEnable(
+  payload: Payload,
+  userId: string,
+  email: string,
+  request?: NextRequest | Request
+): Promise<void> {
+  try {
+    await payload.create({
+      collection: 'audit-logs',
+      data: {
+        action: 'data_update',
+        userId,
+        email,
+        status: 'success',
+        ipAddress: request ? getClientIp(request) : 'unknown',
+        userAgent: request ? getUserAgent(request) : undefined,
+        resource: 'users',
+        details: { action: '2FA enabled' },
+      },
+    })
+  } catch (error) {
+    console.error('Failed to log 2FA enable:', error)
+  }
+}
+
+/**
+ * Log 2FA verification
+ */
+export async function log2FAVerify(
+  payload: Payload,
+  email: string,
+  success: boolean,
+  request?: NextRequest | Request,
+  errorMessage?: string
+): Promise<void> {
+  try {
+    await payload.create({
+      collection: 'audit-logs',
+      data: {
+        action: success ? 'login_success' : 'login_failure',
+        email,
+        status: success ? 'success' : 'failure',
+        ipAddress: request ? getClientIp(request) : 'unknown',
+        userAgent: request ? getUserAgent(request) : undefined,
+        resource: 'users',
+        details: { twoFactorAuth: true },
+        errorMessage: errorMessage || (success ? undefined : '2FA verification failed'),
+      },
+    })
+  } catch (error) {
+    console.error('Failed to log 2FA verify:', error)
+  }
+}
+
+/**
+ * Log token refresh
+ */
+export async function logTokenRefresh(
+  payload: Payload,
+  userId: string,
+  email: string,
+  success: boolean,
+  request?: NextRequest | Request,
+  errorMessage?: string
+): Promise<void> {
+  try {
+    await payload.create({
+      collection: 'audit-logs',
+      data: {
+        action: success ? 'login_success' : 'login_failure',
+        userId: userId || undefined,
+        email: email || undefined,
+        status: success ? 'success' : 'failure',
+        ipAddress: request ? getClientIp(request) : 'unknown',
+        userAgent: request ? getUserAgent(request) : undefined,
+        resource: 'users',
+        details: { tokenRefresh: true },
+        errorMessage: errorMessage || (success ? undefined : 'Token refresh failed'),
+      },
+    })
+  } catch (error) {
+    console.error('Failed to log token refresh:', error)
   }
 }
 

@@ -9,6 +9,7 @@ import next from 'next'
 import { initializeWebSocketServer } from './lib/alerts/websocket'
 import { initializePushNotifications } from './lib/alerts/push-notification'
 import { initializeEmailService } from './lib/alerts/email-notification'
+import { logger } from './lib/logger'
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = process.env.HOSTNAME || 'localhost'
@@ -20,7 +21,12 @@ const handle = app.getRequestHandler()
 app.prepare().then(() => {
   const server = createServer(async (req, res) => {
     try {
-      const parsedUrl = parse(req.url!, true)
+      if (!req.url) {
+        res.statusCode = 400
+        res.end('Bad Request')
+        return
+      }
+      const parsedUrl = parse(req.url, true)
       await handle(req, res, parsedUrl)
     } catch (err) {
       console.error('Error occurred handling', req.url, err)
@@ -30,7 +36,7 @@ app.prepare().then(() => {
   })
 
   // Initialize all notification services
-  console.log('Initializing multi-channel alert delivery services...')
+  logger.info('Initializing multi-channel alert delivery services...')
   
   // Initialize WebSocket server for real-time alerts
   initializeWebSocketServer(server)
@@ -40,10 +46,12 @@ app.prepare().then(() => {
   
   // Initialize email notification service
   initializeEmailService()
+logger.info('All alert delivery services initialized.')
 
+  // Start the server
   server.listen(port, () => {
-    console.log(`> Ready on http://${hostname}:${port}`)
-    console.log(`> WebSocket server ready on ws://${hostname}:${port}/ws/alerts`)
-    console.log(`> Multi-channel alert delivery initialized`)
+    logger.info(`> Ready on http://${hostname}:${port}`)
+    logger.info(`> WebSocket server ready on ws://${hostname}:${port}/ws/alerts`)
+    logger.info(`> Multi-channel alert delivery initialized`)
   })
 })

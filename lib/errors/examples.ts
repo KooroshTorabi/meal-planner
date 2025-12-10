@@ -75,7 +75,7 @@ export const exampleAuthenticationError = withErrorHandler(
  */
 export const exampleAuthorizationError = withErrorHandler(
   async (request: NextRequest) => {
-    const userRole = 'caregiver' // Get from auth token
+    const userRole: string = 'caregiver' // Get from auth token (could be 'admin', 'caregiver', or 'kitchen')
 
     if (userRole !== 'admin') {
       throw new AuthorizationError(

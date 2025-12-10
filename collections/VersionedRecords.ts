@@ -49,25 +49,8 @@ export const VersionedRecords: CollectionConfig = {
     update: updateAccess,
     delete: deleteAccess,
   },
-  indexes: [
-    {
-      fields: {
-        collectionName: 1,
-        documentId: 1,
-      },
-      options: {
-        name: 'collection_document_idx',
-      },
-    },
-    {
-      fields: {
-        createdAt: -1,
-      },
-      options: {
-        name: 'created_at_idx',
-      },
-    },
-  ],
+  // Note: indexes should be created directly in PostgreSQL or via db migrations
+  // indexes: [...] is not supported in CollectionConfig for Payload 3.x
   fields: [
     {
       name: 'collectionName',
