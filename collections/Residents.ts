@@ -31,7 +31,7 @@ const createAccess: Access = async ({ req }) => {
     await logUnauthorizedAccessFromPayload(
       req.payload,
       String(user.id),
-      user.email,
+      user.email || 'unknown@system.local',
       'residents',
       'create',
       undefined,
@@ -52,7 +52,7 @@ const updateAccess: Access = async ({ req, id }) => {
     await logUnauthorizedAccessFromPayload(
       req.payload,
       String(user.id),
-      user.email,
+      user.email || 'unknown@system.local',
       'residents',
       'update',
       String(id),
@@ -73,7 +73,7 @@ const deleteAccess: Access = async ({ req, id }) => {
     await logUnauthorizedAccessFromPayload(
       req.payload,
       String(user.id),
-      user.email,
+      user.email || 'unknown@system.local',
       'residents',
       'delete',
       String(id),

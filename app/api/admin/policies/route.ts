@@ -23,7 +23,13 @@ export async function POST(request: NextRequest) {
       // Use Payload's built-in authentication
       try {
         const authResult = await payload.auth({ headers: request.headers })
-        user = authResult.user as User
+        if (authResult.user) {
+          user = {
+            id: String(authResult.user.id),
+            email: authResult.user.email || '',
+            role: (authResult.user as any).role || 'caregiver'
+          }
+        }
       } catch {
         // Ignore and fall through to accessToken check
       }
